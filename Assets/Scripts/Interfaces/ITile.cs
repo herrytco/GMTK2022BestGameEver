@@ -21,25 +21,35 @@ namespace Interfaces
         }
 
         /// <summary>
-        /// Called when a character visits this tile, but it already is occupied.
+        /// A character passes through this tile (does not stay/try to occupy)
+        /// </summary>
+        /// <param name="visitor"></param>
+        public abstract void Visit(ICharacter visitor);
+
+        /// <summary>
+        /// Called when a character tries to occupy this tile, but it already is occupied.
         /// </summary>
         /// <param name="defenders">The characters already present on this tile.
         /// Assumed to be non-empty.</param>
         /// <param name="attacker">The visiting character.</param>
         /// <returns>True if the attacker wins and occupies the tile.</returns>
         public abstract bool Fight(List<ICharacter> defenders, ICharacter attacker);
-
-        public void Visit(ICharacter visitor)
+        
+        /// <summary>
+        /// A character tries to occupy this tile.
+        /// </summary>
+        /// <param name="attacker"></param>
+        public void Occupy(ICharacter attacker)
         {
             // if the tile is occupied and the visitor loses the fight, do not process effects
-            if (Characters.Count != 0 && !Fight(Characters, visitor))
+            if (Characters.Count != 0 && !Fight(Characters, attacker))
             {
                 return;
             }
 
             foreach (var effect in _activeEffects)
             {
-                if (!effect.OnCharacterVisit(this, visitor))
+                if (!effect.OnCharacterVisit(this, attacker))
                 {
                     return;
                 }
