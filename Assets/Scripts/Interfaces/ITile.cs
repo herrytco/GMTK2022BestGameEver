@@ -23,8 +23,13 @@ namespace Interfaces
         /// <summary>
         /// A character passes through this tile (does not stay/try to occupy)
         /// </summary>
-        /// <param name="visitor"></param>
-        public abstract void Visit(ICharacter visitor);
+        public void Visit(ICharacter visitor)
+        {
+            foreach (var effect in _activeEffects)
+            {
+                effect.OnCharacterVisit(this, visitor);
+            }
+        }
 
         /// <summary>
         /// Called when a character tries to occupy this tile, but it already is occupied.
@@ -38,7 +43,6 @@ namespace Interfaces
         /// <summary>
         /// A character tries to occupy this tile.
         /// </summary>
-        /// <param name="attacker"></param>
         public void Occupy(ICharacter attacker)
         {
             // if the tile is occupied and the visitor loses the fight, do not process effects
@@ -49,7 +53,7 @@ namespace Interfaces
 
             foreach (var effect in _activeEffects)
             {
-                if (!effect.OnCharacterVisit(this, attacker))
+                if (!effect.OnOccupied(this, attacker))
                 {
                     return;
                 }

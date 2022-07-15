@@ -8,7 +8,16 @@
         /// </summary>
         public int Priority { get; }
 
+        /// <summary>
+        /// Called after a character has occupied this tile.
+        /// </summary>
         /// <returns>True if the character stays and remaining effects should be applied.</returns>
+        public bool OnOccupied(ITile tile, ICharacter visitor) => true;
+
+        /// <summary>
+        /// Called when a character passes through this tile.
+        /// </summary>
+        /// <returns>True if nothing happens to the character and remaining effects should be applied.</returns>
         public bool OnCharacterVisit(ITile tile, ICharacter visitor) => true;
     }
 }
