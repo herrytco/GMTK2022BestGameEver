@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Interfaces
@@ -33,7 +34,7 @@ namespace Interfaces
         /// </summary>
         public void Visit(ICharacter visitor)
         {
-            foreach (var effect in _activeEffects)
+            foreach (var effect in _activeEffects.ToList())
             {
                 effect.OnCharacterVisit(this, visitor);
             }
@@ -59,7 +60,7 @@ namespace Interfaces
                 return;
             }
 
-            foreach (var effect in _activeEffects)
+            foreach (var effect in _activeEffects.ToList())
             {
                 if (!effect.OnOccupied(this, attacker))
                 {
@@ -73,7 +74,7 @@ namespace Interfaces
         /// </summary>
         public void Leave(ICharacter character, ITile destination)
         {
-            foreach (var effect in _activeEffects)
+            foreach (var effect in _activeEffects.ToList())
             {
                 if (!effect.OnLeave(this, character, destination))
                 {
