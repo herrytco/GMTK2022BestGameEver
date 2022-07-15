@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,11 @@ namespace Interfaces
 
         public List<ICharacter> Characters { get; private set; } = new();
 
+        public List<ITileEffect> ActiveEffects
+        {
+            get { return _activeEffects; }
+        }
+
         private List<ITileEffect> _activeEffects;
 
         public void AddEffect(ITileEffect effect)
@@ -19,6 +25,8 @@ namespace Interfaces
             _activeEffects.Sort(Comparer<ITileEffect>.Create((a, b) =>
                 -a.Priority.CompareTo(b.Priority)));
         }
+
+        public void RemoveEffectsWhere(Predicate<ITileEffect> match) => _activeEffects.RemoveAll(match);
 
         /// <summary>
         /// A character passes through this tile (does not stay/try to occupy)
