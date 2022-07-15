@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Interfaces;
+using UnityEngine;
 
 namespace Interfaces
 {
-    public abstract class ITile
+    public abstract class ITile : MonoBehaviour
     {
         public List<ITile> NextTiles { get; private set; } = new();
         public List<ITile> PrevTiles { get; private set; } = new();
