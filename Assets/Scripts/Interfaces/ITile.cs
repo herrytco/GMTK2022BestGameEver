@@ -39,7 +39,7 @@ namespace Interfaces
         /// <param name="attacker">The visiting character.</param>
         /// <returns>True if the attacker wins and occupies the tile.</returns>
         public abstract bool Fight(List<ICharacter> defenders, ICharacter attacker);
-        
+
         /// <summary>
         /// A character tries to occupy this tile.
         /// </summary>
@@ -58,6 +58,22 @@ namespace Interfaces
                     return;
                 }
             }
+        }
+
+        /// <summary>
+        /// A character (that has occupied this tile previously) leaves this tile.
+        /// </summary>
+        public void Leave(ICharacter character, ITile destination)
+        {
+            foreach (var effect in _activeEffects)
+            {
+                if (!effect.OnLeave(this, character, destination))
+                {
+                    return;
+                }
+            }
+
+            Characters.RemoveAll(c => c == character);
         }
     }
 }
