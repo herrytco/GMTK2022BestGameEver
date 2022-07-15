@@ -9,5 +9,7 @@ namespace Interfaces
         public List<ITile> PrevTiles { get; private set; } = new();
         
         public List<ICharacter> Characters { get; private set; } = new();
+
+        public List<ITileEffect> ActiveEffects { get; private set; } = new();
     }
 }
