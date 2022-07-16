@@ -17,30 +17,11 @@ public class Deck : MonoBehaviour
     [SerializeField] private CardBank cardBank;
     [SerializeField] private UpDownBumper drawIndicator;
 
-    private static readonly System.Random _rng = new System.Random();
+    private static readonly System.Random Rng = new();
 
     private readonly List<CardPlaceholder> _cardPlaceholders = new();
     private int CurrentlyDisplayedCards => Math.Min(deck.Count, maxDisplayedCardsInDeck);
     private TeamCardManager _teamCardManager;
-    
-    public UpDownBumper DrawIndicator
-    {
-        get => drawIndicator;
-    }
-    
-    public CardBank CardBank
-    {
-        get => cardBank;
-        set => cardBank = value;
-    }
-
-    public TeamCardManager TeamCardManager
-    {
-        get => _teamCardManager;
-        set => _teamCardManager = value;
-    }
-
-    private bool CanDrawCards => TeamCardManager.IsCardDrawEnabled;
 
     private void Start()
     {
@@ -55,7 +36,7 @@ public class Deck : MonoBehaviour
 
     public void Shuffle()
     {
-        deck = deck.OrderBy(a => _rng.Next()).ToList();
+        deck = deck.OrderBy(a => Rng.Next()).ToList();
     }
 
     public void AddCard(AbstractCard card)
@@ -112,4 +93,23 @@ public class Deck : MonoBehaviour
 
         RedrawCardBacks();
     }
+
+    public UpDownBumper DrawIndicator
+    {
+        get => drawIndicator;
+    }
+
+    public CardBank CardBank
+    {
+        get => cardBank;
+        set => cardBank = value;
+    }
+
+    public TeamCardManager TeamCardManager
+    {
+        get => _teamCardManager;
+        set => _teamCardManager = value;
+    }
+
+    private bool CanDrawCards => TeamCardManager.IsCardDrawEnabled;
 }

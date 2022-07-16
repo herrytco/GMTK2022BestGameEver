@@ -10,6 +10,9 @@ namespace Cards
         [SerializeField] private List<AbstractCard> handCards = new();
         [SerializeField] private float outerPadding = 10f;
 
+        private TeamCardManager _teamCardManager;
+        private GameObject _decisionCanvas;
+
         private float _screenHeight;
         private float _screenWidth;
 
@@ -28,8 +31,9 @@ namespace Cards
         public void AddCard(AbstractCard card)
         {
             AbstractCard cardNew = Instantiate(card, transform);
+            cardNew.Bank = this;
             cardNew.Usable = true;
-            
+
             handCards.Add(cardNew);
             RedrawCards();
         }
@@ -55,17 +59,48 @@ namespace Cards
                 var bottomRightCardSpace = bottomRightPadded + Vector3.left * cardSize.x / 2;
 
                 float widthSegment = (bottomRightCardSpace.x - bottomLeftCardSpace.x) / (handCards.Count + 1);
-                
+
                 handCard.PositionInCardBank = bottomLeftCardSpace + Vector3.right * (widthSegment * (i + 1));
-                
+
                 handCard.AdjustOrderIndex(i * handCards.Count);
             }
         }
 
+        public void UseCardDice(AbstractCard card)
+        {
+            RemoveCard(card);
+            _teamCardManager.ReportDiceRoll(card);
+        }
+
+        public void UseCardSkill(AbstractCard card)
+        {
+            RemoveCard(card);
+            _teamCardManager.ReportSkillUse(card);
+        }
+
+        private void RemoveCard(AbstractCard card)
+        {
+            handCards.Remove(card);
+            RedrawCards();
+        }
+        
+        
         private float ScreenHeight => Camera.main.orthographicSize * 2;
 
         private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
 
         public List<AbstractCard> HandCards => handCards;
+
+        public GameObject DecisionCanvas
+        {
+            set => _decisionCanvas = value;
+            get => _decisionCanvas;
+        }
+
+        public TeamCardManager TeamCardManager
+        {
+            get => _teamCardManager;
+            set => _teamCardManager = value;
+        }
     }
 }

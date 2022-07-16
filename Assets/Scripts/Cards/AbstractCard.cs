@@ -29,7 +29,7 @@ namespace Cards
 
         private Vector3 _positionInCardBank;
 
-        private GameObject _decisionCanvas;
+        public CardBank _bank;
 
         public bool Usable
         {
@@ -130,7 +130,7 @@ namespace Cards
                 _isCurrentlyDragging = true;
                 transform.localScale = new Vector3(.5f, .5f, 1);
 
-                _decisionCanvas = Instantiate(decisionCanvasPrefab);
+                _bank.DecisionCanvas.SetActive(true);
             }
             
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -141,13 +141,26 @@ namespace Cards
 
         private void OnMouseUp()
         {
+            if (!_isCurrentlyDragging)
+                return;
+            
             transform.position = _positionInCardBank;
             transform.localScale = new Vector3(.5f, .5f, 1);
             _isCurrentlyDragging = false;
 
-            if (_decisionCanvas != null)
+            _bank.DecisionCanvas.SetActive(false);
+
+            float mouseXPos = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
+
+            float p = (mouseXPos / ScreenWidth) + .5f;
+
+            if (p < .3)
             {
-                Destroy(_decisionCanvas);
+                _bank.UseCardDice(this);
+            }
+            else if (p > .7)
+            {
+                _bank.UseCardSkill(this);
             }
         }
 
@@ -243,5 +256,14 @@ namespace Cards
                 transform.position = value;
             }
         }
+
+        public CardBank Bank
+        {
+            set => _bank = value;
+        }
+        
+        private float ScreenHeight => Camera.main.orthographicSize * 2;
+
+        private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
     }
 }
