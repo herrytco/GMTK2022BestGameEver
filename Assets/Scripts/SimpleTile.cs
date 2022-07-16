@@ -11,6 +11,7 @@ public class SimpleTile : ITile
     private void Start()
     {
         NextTiles = new List<ITile>(myNextTiles);
+        if (NextTiles.Count == 0) Debug.LogWarning("Tile \"" + gameObject.name + "\" has no next tiles set!");
 
         PrevTiles = new List<ITile>();
         foreach (var tile in NextTiles) tile.PrevTiles.Add(this);
