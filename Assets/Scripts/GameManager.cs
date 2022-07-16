@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     public void MovePiece(ICharacter piece)
     {
-        piece.CurrentTile.Leave(piece, piece.CurrentTile);
+        piece.CurrentTile.Leave(piece, piece.CurrentTile, ((tile, piece) => { }));
         ITile tile = piece.CurrentTile;
         for (;rollResult > 0; rollResult--)
         {
@@ -50,10 +50,10 @@ public class GameManager : MonoBehaviour
 
             tile = tile.NextTiles[0];
 
-            tile.Visit(piece);
+            tile.Visit(piece, ((tile, piece) => { }));
         }
         tile = tile.NextTiles[0];
-        tile.Occupy(piece);
+        tile.Occupy(piece, ((tile, piece) => { }));
     }
 
 }
