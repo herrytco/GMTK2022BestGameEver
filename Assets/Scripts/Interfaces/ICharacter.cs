@@ -8,6 +8,9 @@ namespace Interfaces
         public String Name { get; private set; } = "Unnamed Character";
         public ITile CurrentTile { get; private set; }
 
-        // public Object Team { get; private set; }
+        public Team Team { get; private set; } = new Team("test0", 0);
+        public bool Shield { get; private set; }
+
+        public GameObject ConfirmationCanvas { get; set; }
     }
 }
