@@ -27,7 +27,10 @@ namespace Cards
 
         public void AddCard(AbstractCard card)
         {
-            handCards.Add(Instantiate(card, transform));
+            AbstractCard cardNew = Instantiate(card, transform);
+            cardNew.Usable = true;
+            
+            handCards.Add(cardNew);
             RedrawCards();
         }
 
@@ -52,8 +55,9 @@ namespace Cards
                 var bottomRightCardSpace = bottomRightPadded + Vector3.left * cardSize.x / 2;
 
                 float widthSegment = (bottomRightCardSpace.x - bottomLeftCardSpace.x) / (handCards.Count + 1);
-
-                handCard.transform.position = bottomLeftCardSpace + Vector3.right * (widthSegment * (i + 1));
+                
+                handCard.PositionInCardBank = bottomLeftCardSpace + Vector3.right * (widthSegment * (i + 1));
+                
                 handCard.AdjustOrderIndex(i * handCards.Count);
             }
         }
@@ -61,5 +65,7 @@ namespace Cards
         private float ScreenHeight => Camera.main.orthographicSize * 2;
 
         private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
+
+        public List<AbstractCard> HandCards => handCards;
     }
 }

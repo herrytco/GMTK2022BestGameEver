@@ -22,6 +22,7 @@ namespace Cards
         private Deck _deck;
         private CardBank _bank;
         private bool _isCardDrawEnabled = true;
+        private bool _isCardPlayable = false;
         private Team _team;
 
         private readonly List<Action<AbstractCard>> _cardDrawCallbacks = new();
@@ -29,6 +30,19 @@ namespace Cards
         private GameManager _gameManager;
 
         private GameObject _drawIndicator;
+
+        public bool IsCardPlayable
+        {
+            get => _isCardPlayable;
+            set
+            {
+                _isCardPlayable = value;
+                foreach (var handCard in _bank.HandCards)
+                {
+                    handCard.Usable = value;
+                }
+            }
+        }
 
         public GameManager GameManager
         {
@@ -48,6 +62,11 @@ namespace Cards
             {
                 _isCardDrawEnabled = value; 
                 _drawIndicator.SetActive(value);
+
+                if (value)
+                {
+                    StartCoroutine("PrintDrawMessage");
+                }
             }
         }
 
@@ -61,7 +80,6 @@ namespace Cards
             _deck.CardBank = _bank;
 
             _drawIndicator = _deck.DrawIndicator.gameObject;
-            Debug.Log(_drawIndicator.name);
 
             foreach (var card in defaultCards)
             {
@@ -79,14 +97,17 @@ namespace Cards
                     Debug.LogError("More Initial Cards than there are default cards!");
                     break;
                 }
+                IsCardPlayable = false;
             }
             
             _deck.Shuffle();
         }
 
-        private void Start()
+        private IEnumerator PrintDrawMessage()
         {
+            yield return new WaitForSeconds(1f);
             
+            _gameManager.TextManager.SetMessage("Draw a Card!");
         }
 
         public void AddDrawCallBack(Action<AbstractCard> callback)
@@ -97,7 +118,8 @@ namespace Cards
         public void ReportDrawnCard(AbstractCard card)
         {
             IsCardDrawEnabled = false;
-            
+            IsCardPlayable = true;
+
             foreach (var cardDrawCallback in _cardDrawCallbacks)
             {
                 cardDrawCallback(card);

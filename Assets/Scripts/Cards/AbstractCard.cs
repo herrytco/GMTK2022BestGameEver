@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Cards
 {
     public abstract class AbstractCard : MonoBehaviour
     {
+        [SerializeField] private GameObject decisionCanvasPrefab;
+        
         private TextMeshProUGUI _costText;
         private TextMeshProUGUI _descriptionText;
         private TextMeshProUGUI _diceText;
@@ -21,6 +24,18 @@ namespace Cards
         private bool _scaleDownCoroutineIsRunning = false;
         private bool _scaledUp = false;
         private bool _shouldResize = true;
+        private bool _usable = false;
+        private bool _isCurrentlyDragging = false;
+
+        private Vector3 _positionInCardBank;
+
+        private GameObject _decisionCanvas;
+
+        public bool Usable
+        {
+            get => _usable;
+            set => _usable = value;
+        }
 
         public bool ShouldResize
         {
@@ -102,6 +117,40 @@ namespace Cards
         {
             _flavorText.text = text;
         }
+
+        private void OnMouseDrag()
+        {
+            if (!Usable)
+            {
+                return;
+            }
+
+            if (!_isCurrentlyDragging)
+            {
+                _isCurrentlyDragging = true;
+                transform.localScale = new Vector3(.5f, .5f, 1);
+
+                _decisionCanvas = Instantiate(decisionCanvasPrefab);
+            }
+            
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+
+            transform.position = pos;
+        }
+
+        private void OnMouseUp()
+        {
+            transform.position = _positionInCardBank;
+            transform.localScale = new Vector3(.5f, .5f, 1);
+            _isCurrentlyDragging = false;
+
+            if (_decisionCanvas != null)
+            {
+                Destroy(_decisionCanvas);
+            }
+        }
+
 
         private void OnMouseOver()
         {
@@ -185,5 +234,14 @@ namespace Cards
         public abstract void ExecuteEffect();
 
         public abstract CardData GetCardData();
+        
+        public Vector3 PositionInCardBank
+        {
+            set
+            {
+                _positionInCardBank = value;
+                transform.position = value;
+            }
+        }
     }
 }

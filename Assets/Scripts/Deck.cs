@@ -84,8 +84,8 @@ public class Deck : MonoBehaviour
         deck.RemoveAt(0);
         RedrawCardBacks();
 
-        TeamCardManager.ReportDrawnCard(drawnCard);
         cardBank.AddCard(drawnCard);
+        TeamCardManager.ReportDrawnCard(drawnCard);
     }
 
     private void RedrawCardBacks()
