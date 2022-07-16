@@ -16,5 +16,6 @@ namespace Interfaces
         public abstract void AnimateMovement(ITile tile, float t);
         public abstract void MoveOneStep(bool onlyVisiting, int moveToTileId);
         public abstract void Kill();
+        public abstract bool CheckForCrossroads();
     }
 }

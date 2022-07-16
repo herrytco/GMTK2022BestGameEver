@@ -5,9 +5,7 @@ public class CharacterController : ICharacter
 {
     private GameManager gameManager;
     [SerializeField] private ITile spawn;
-    private bool mustLeave;
 
-    public bool MustLeave { get => mustLeave; set => mustLeave = value; }
 
 
     // Start is called before the first frame update
@@ -20,6 +18,7 @@ public class CharacterController : ICharacter
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
         Team = gameManager.Teams[0];
+        gameManager.SelectedCharacter = this;
         CurrentTile.Occupy(this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
 
@@ -47,19 +46,13 @@ public class CharacterController : ICharacter
     /// <param name="onlyVisiting">should be false if this is the last move</param>
     /// <param name="moveToTileId">the id of the tile to move to if there is more than one available</param>
     /// <returns>The tile that is currently occupied or visited</returns>
-    public override void MoveOneStep(bool onlyVisiting, int moveToTileId = 0)
+    public override void MoveOneStep(bool onlyVisiting, int moveToTileId = -1)
     {
 
         Debug.Log("a!");
-        if (CurrentTile.NextTiles.Count > 1)
-        {
-            Debug.Log("Direction Selection");
-            gameManager.EnableTileSelectionUI(CurrentTile);
-            return;
-        }
 
-        if (MustLeave)
-            CurrentTile.Leave(this, CurrentTile, (ITile tile, ICharacter characer) => gameManager.RegisterLeaveCallback(tile));
+        if (moveToTileId == -1)
+            moveToTileId++;
 
         CurrentTile = CurrentTile.NextTiles[moveToTileId];
 
@@ -77,6 +70,21 @@ public class CharacterController : ICharacter
             CurrentTile.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
         return;
+    }
+
+    /// <summary>
+    /// Checks if there is more than one next tile and enables Selection UI
+    /// </summary>
+    /// <returns>true if there is more than one next tile</returns>
+    public override bool CheckForCrossroads()
+    {
+        if (CurrentTile.NextTiles.Count > 1) //does not even work yet
+        {
+            gameManager.EnableTileSelectionUI(CurrentTile);
+            return true;
+        }
+
+        return false;
     }
     public void ComfirmMovement()
     {
@@ -100,7 +108,10 @@ public class CharacterController : ICharacter
 
         //Stop Animation
         if (t == 1)
+        {
+            gameManager.AnimatingMovement = false;
             gameManager.MoveAnimDone = true;
+        }
     }
 
     public override void Kill()

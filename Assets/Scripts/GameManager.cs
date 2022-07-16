@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private bool waitForEvents;
     private float moveAnimTimer;
     public int TargetTileID { private get; set; }
-    private List<GameObject> movementSelectionUI;
+    private List<GameObject> movementSelectionUI = new();
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
 
@@ -26,7 +26,6 @@ public class GameManager : MonoBehaviour
     public Team GetActiveTeam => Teams[activeTeamIndex];
     public int RollResult { get; private set; } = 6;
     public bool AnimatingMovement { get => animatingMovement; set => animatingMovement = value; }
-    public int selectedTileId { get; set; }
 
     [SerializeField] private GameObject teamCardManagerPrefab;
     [SerializeField] private GameObject endTurnButton;
@@ -36,6 +35,7 @@ public class GameManager : MonoBehaviour
     {
         get => textManager;
     }
+
     public bool MoveAnimDone { get => moveAnimationDone; set => moveAnimationDone = value; }
     public bool WaitForEvents { get => waitForEvents; protected set => waitForEvents = value; }
 
@@ -69,6 +69,11 @@ public class GameManager : MonoBehaviour
     {
         if (RollResult > 0 && animatingMovement && !WaitForEvents)
         {
+            if (SelectedCharacter.CheckForCrossroads())
+            {
+                animatingMovement = false;
+                return;
+            }
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
             SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
         }
@@ -79,8 +84,9 @@ public class GameManager : MonoBehaviour
             moveAnimTimer = 0;
             AnimatingMovement = false;
             MoveAnimDone = false;
-            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
+
             WaitForEvents = true;
+            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
 
 
             RollResult--;
@@ -141,9 +147,10 @@ public class GameManager : MonoBehaviour
         {
             Vector2 dirVec = nextTile.transform.position - tile.transform.position;
             Vector2 dirUnitVec = dirVec / dirVec.magnitude;
+            GameObject tmp = Instantiate(MovementSelectionGO, dirUnitVec * dirVec.magnitude, Quaternion.identity);
 
-            movementSelectionUI.Add(Instantiate(MovementSelectionGO, dirUnitVec*dirVec.magnitude, Quaternion.identity));
-            MovementSelectionGO.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
+            movementSelectionUI.Add(tmp);
+            tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
         }
     }
 
@@ -151,9 +158,10 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject button in movementSelectionUI)
         {
-            movementSelectionUI.Remove(button);
             Destroy(button);
         }
+
+        movementSelectionUI = new();
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
@@ -166,6 +174,7 @@ public class GameManager : MonoBehaviour
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
         WaitForEvents = false;
+        moveAnimTimer = 0;
         SelectedCharacter.MustLeave = true;
     }
     public void RegisterLeaveCallback(ITile tile)
