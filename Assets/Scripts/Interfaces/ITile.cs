@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Interfaces
 {
-    [RequireComponent(typeof(EventManager<TileEvent>))]
+    [RequireComponent(typeof(TileEventManager))]
     public abstract class ITile : MonoBehaviour
     {
         public List<ITile> NextTiles { get; protected set; } = new();

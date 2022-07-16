@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Events
 {
-    public class EventManager<TEvent> : MonoBehaviour
+    public abstract class EventManager<TEvent> : MonoBehaviour
     {
         private List<IEventObserver<TEvent>> _observers = new();
 
