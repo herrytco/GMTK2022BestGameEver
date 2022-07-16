@@ -18,11 +18,9 @@ public class ScrollViewLogic : MonoBehaviour
         }
     }
 
-    private void Update()
+    void AddNewPlayer()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject container = Instantiate(scrollableContainerPrefab, transform);
-        }
+        GameObject container = Instantiate(scrollableContainerPrefab, transform);
+        //modify content
     }
 }
