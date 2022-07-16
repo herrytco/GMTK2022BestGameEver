@@ -9,6 +9,7 @@ public class SimpleDebugTile : MonoBehaviour
         var tile = GetComponent<SimpleTile>();
         foreach (var nextTile in tile.myNextTiles)
         {
+            if (nextTile == null) return;
             Gizmos.color = Color.red;
             Gizmos.DrawLine(tile.transform.position, nextTile.transform.position);
         }
