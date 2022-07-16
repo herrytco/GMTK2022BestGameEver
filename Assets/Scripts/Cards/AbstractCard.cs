@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -12,11 +13,24 @@ namespace Cards
         private TextMeshProUGUI _flavorText;
         private TextMeshProUGUI _titleText;
 
+        private SpriteRenderer _foreGround;
+        private SpriteRenderer _art;
+        private Canvas _canvas;
+
+        private bool _scaleUpCoroutineIsRunning = false;
+        private bool _scaleDownCoroutineIsRunning = false;
+        private bool _scaledUp = false;
+        private bool _shouldResize = true;
+
+        public bool ShouldResize
+        {
+            get => _shouldResize;
+            set => _shouldResize = value;
+        }
+
         private void Start()
         {
-            var textboxes = transform.GetComponentsInChildren<TextMeshProUGUI>();
-
-            foreach (var box in textboxes)
+            foreach (var box in transform.GetComponentsInChildren<TextMeshProUGUI>())
             {
                 var textName = box.name;
 
@@ -43,6 +57,27 @@ namespace Cards
             UpdateFlavorText(GetCardData().FlavorText);
         }
 
+        public void AdjustOrderIndex(int offset)
+        {
+            if (_canvas == null || _art == null || _foreGround == null)
+            {
+                foreach (var childRenderer in transform.GetComponentsInChildren<SpriteRenderer>())
+                {
+                    if (childRenderer.gameObject.name.Contains("foreground", StringComparison.CurrentCultureIgnoreCase))
+                        _foreGround = childRenderer;
+
+                    if (childRenderer.gameObject.name.Contains("art", StringComparison.CurrentCultureIgnoreCase))
+                        _art = childRenderer;
+                }
+
+                _canvas = GetComponentInChildren<Canvas>();
+            }
+
+            _art.sortingOrder = 1 + offset;
+            _foreGround.sortingOrder = 2 + offset;
+            _canvas.sortingOrder = 3 + offset;
+        }
+
         public void UpdateCostText(string text)
         {
             _costText.text = text;
@@ -66,6 +101,85 @@ namespace Cards
         public void UpdateFlavorText(string text)
         {
             _flavorText.text = text;
+        }
+
+        private void OnMouseOver()
+        {
+            if (_scaleDownCoroutineIsRunning && _shouldResize)
+            {
+                StopCoroutine("ScaleDown");
+                _scaleDownCoroutineIsRunning = false;
+            }
+
+            if (!_scaleUpCoroutineIsRunning && !_scaledUp)
+                StartCoroutine("ScaleUp");
+        }
+
+        private void OnMouseExit()
+        {
+            if (_scaleUpCoroutineIsRunning)
+            {
+                StopCoroutine("ScaleUp");
+                _scaleUpCoroutineIsRunning = false;
+            }
+
+            StartCoroutine("ScaleDown");
+        }
+
+        private IEnumerator ScaleDown()
+        {
+            _scaleDownCoroutineIsRunning = true;
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (transform.localScale.x <= .5)
+                    break;
+
+                transform.localScale = new Vector3(
+                    Mathf.Lerp(transform.localScale.x, transform.localScale.x - 0.02f, Mathf.SmoothStep(0f, 1f, i)),
+                    Mathf.Lerp(transform.localScale.y, transform.localScale.y - 0.02f, Mathf.SmoothStep(0f, 1f, i)),
+                    1
+                );
+
+                transform.position = new Vector3(
+                    transform.position.x,
+                    Mathf.Lerp(transform.position.y, transform.position.y - 0.06f, Mathf.SmoothStep(0f, 1f, i)),
+                    transform.position.z
+                );
+
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            _scaleDownCoroutineIsRunning = false;
+            _scaledUp = false;
+        }
+
+        private IEnumerator ScaleUp()
+        {
+            _scaleUpCoroutineIsRunning = true;
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (transform.localScale.x >= .6)
+                    break;
+
+                transform.localScale = new Vector3(
+                    Mathf.Lerp(transform.localScale.x, transform.localScale.x + 0.02f, Mathf.SmoothStep(0f, 1f, i)),
+                    Mathf.Lerp(transform.localScale.y, transform.localScale.y + 0.02f, Mathf.SmoothStep(0f, 1f, i)),
+                    1
+                );
+
+                transform.position = new Vector3(
+                    transform.position.x,
+                    Mathf.Lerp(transform.position.y, transform.position.y + 0.06f, Mathf.SmoothStep(0f, 1f, i)),
+                    transform.position.z
+                );
+
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            _scaleUpCoroutineIsRunning = false;
+            _scaledUp = true;
         }
 
         public abstract void ExecuteEffect();
