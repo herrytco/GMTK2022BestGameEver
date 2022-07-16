@@ -760,7 +760,7 @@ GameObject:
   - component: {fileID: 74581499}
   - component: {fileID: 74581498}
   m_Layer: 5
-  m_Name: Customise
+  m_Name: Customise Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4261,8 +4261,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   customiseScreenHolder: {fileID: 255154110}
-  teamSize: {fileID: 1080074005}
-  scrollMenu: {fileID: 0}
+  teamSizeText: {fileID: 1080074007}
+  scrollableContainerPrefab: {fileID: 5250416084464173452, guid: 7b34ba0c946aef34f9ba49fd80aeee2c, type: 3}
 --- !u!4 &412724222
 Transform:
   m_ObjectHideFlags: 0
@@ -9832,8 +9832,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -120.9216, y: -180.30743}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -145.25177, y: -175.98207}
+  m_SizeDelta: {x: 151.3397, y: 41.3493}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1080074007
 MonoBehaviour:
@@ -9855,7 +9855,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: 'Characters Per Team: 10'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -9882,15 +9882,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 13.77
+  m_fontSizeBase: 13.77
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -16648,7 +16648,7 @@ GameObject:
   - component: {fileID: 1788714589}
   - component: {fileID: 1788714588}
   m_Layer: 5
-  m_Name: Local
+  m_Name: Local Game Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17359,7 +17359,7 @@ GameObject:
   - component: {fileID: 1845010813}
   - component: {fileID: 1845010812}
   m_Layer: 5
-  m_Name: Singleplayer
+  m_Name: Singleplayer Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
