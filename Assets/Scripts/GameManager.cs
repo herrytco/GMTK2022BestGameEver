@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     private bool waitForEvents;
     private float moveAnimTimer;
     public int TargetTileID { private get; set; }
-    private List<GameObject> movementSelectionUI;
+    private List<GameObject> movementSelectionUI = new();
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
 
@@ -24,9 +24,8 @@ public class GameManager : MonoBehaviour
 
     public List<Team> Teams { get; set; } = new();
     public Team GetActiveTeam => Teams[activeTeamIndex];
-    public int RollResult { get; private set; }
+    public int RollResult { get; private set; } = 6;
     public bool AnimatingMovement { get => animatingMovement; set => animatingMovement = value; }
-    public int selectedTileId { get; set; }
 
     [SerializeField] private GameObject teamCardManagerPrefab;
     [SerializeField] private GameObject endTurnButton;
@@ -36,7 +35,9 @@ public class GameManager : MonoBehaviour
     {
         get => textManager;
     }
-    public bool MoveDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+
+    public bool MoveAnimDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+    public bool WaitForEvents { get => waitForEvents; protected set => waitForEvents = value; }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
 
@@ -66,13 +67,18 @@ public class GameManager : MonoBehaviour
   // Update is called once per frame
     private void Update()
     {
-        if (animatingMovement && !waitForEvents)
+        if (RollResult > 0 && animatingMovement && !WaitForEvents)
         {
+            if (SelectedCharacter.CheckForCrossroads())
+            {
+                animatingMovement = false;
+                return;
+            }
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
             SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
         }
 
-        if (moveAnimationDone && !waitForEvents)
+        if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
 
@@ -140,9 +146,10 @@ public class GameManager : MonoBehaviour
         {
             Vector2 dirVec = nextTile.transform.position - tile.transform.position;
             Vector2 dirUnitVec = dirVec / dirVec.magnitude;
+            GameObject tmp = Instantiate(MovementSelectionGO, dirUnitVec * dirVec.magnitude, Quaternion.identity);
 
-            movementSelectionUI.Add(Instantiate(MovementSelectionGO, dirUnitVec*dirVec.magnitude, Quaternion.identity));
-            MovementSelectionGO.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
+            movementSelectionUI.Add(tmp);
+            tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
         }
     }
 
@@ -150,18 +157,25 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject button in movementSelectionUI)
         {
-            movementSelectionUI.Remove(button);
             Destroy(button);
         }
+
+        movementSelectionUI = new();
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
     {
-        waitForEvents = false;
+        Debug.Log("e");
+        WaitForEvents = false;
+        animatingMovement = true;
     }
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
         waitForEvents = false;
+    }
+    public void RegisterLeaveCallback(ITile tile)
+    {
+        SelectedCharacter.MustLeave = false;
     }
 }
