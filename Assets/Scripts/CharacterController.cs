@@ -1,10 +1,13 @@
 using Interfaces;
 using UnityEngine;
 
-public class PlayerController : ICharacter
+public class CharacterController : ICharacter
 {
     private GameManager gameManager;
     [SerializeField] private ITile spawn;
+    private bool mustLeave;
+
+    public bool MustLeave { get => mustLeave; set => mustLeave = value; }
 
 
     // Start is called before the first frame update
@@ -12,11 +15,12 @@ public class PlayerController : ICharacter
     {
         CurrentTile = spawn;
         transform.position = CurrentTile.transform.position;
-        spawn.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
+        Team = gameManager.Teams[0];
+        CurrentTile.Occupy(this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
 
     // Update is called once per frame
@@ -26,7 +30,8 @@ public class PlayerController : ICharacter
 
     private void OnMouseDown()
     {
-        if (Team.Id != gameManager.GetActiveTeam.Id)
+        Debug.Log("RollResult: " + gameManager.RollResult + "\nWaitforevents: " + gameManager.WaitForEvents);
+        if (Team.Id != gameManager.GetActiveTeam.Id || gameManager.WaitForEvents || gameManager.RollResult <= 0)
             return; // maybe implement an animation for selecting piece of different team
 
         if (gameManager.SelectedCharacter != null)
@@ -44,21 +49,31 @@ public class PlayerController : ICharacter
     /// <returns>The tile that is currently occupied or visited</returns>
     public override void MoveOneStep(bool onlyVisiting, int moveToTileId = 0)
     {
-        if (CurrentTile.NextTiles.Count > 1 && moveToTileId != 0)
+
+        Debug.Log("a!");
+        if (CurrentTile.NextTiles.Count > 1)
         {
+            Debug.Log("Direction Selection");
             gameManager.EnableTileSelectionUI(CurrentTile);
             return;
         }
+
+        if (MustLeave)
+            CurrentTile.Leave(this, CurrentTile, (ITile tile, ICharacter characer) => gameManager.RegisterLeaveCallback(tile));
 
         CurrentTile = CurrentTile.NextTiles[moveToTileId];
 
 
         if (onlyVisiting)
         {
+
+            Debug.Log("SHEESH");
             CurrentTile.Visit(this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
         }
         else
         {
+
+            Debug.Log("oi");
             CurrentTile.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
         return;
@@ -85,7 +100,7 @@ public class PlayerController : ICharacter
 
         //Stop Animation
         if (t == 1)
-            gameManager.MoveDone = true;
+            gameManager.MoveAnimDone = true;
     }
 
     public override void Kill()
