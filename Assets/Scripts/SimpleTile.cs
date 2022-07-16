@@ -18,17 +18,8 @@ public class SimpleTile : ITile
         {
             tile.PrevTiles.Add(this);
         }
+        
         DrawConnections();
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (NextTiles == null) return;
-        foreach (var tile in NextTiles)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(this.transform.position, tile.transform.position);
-        }
     }
 
     private void DrawConnections()
