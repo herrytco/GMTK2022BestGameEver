@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,13 +56,10 @@ namespace Events
             {
                 var obs = _toDoObservers[0];
                 _toDoObservers.RemoveAt(0);
-                
+
                 obs.OnEvent(_toDoEvent, ResumeHandleEvents);
                 if (!obs.isDone) yield return null;
-                if (!ReferenceEquals(obs.destroyWhenDone, null))
-                {
-                    Destroy(obs.destroyWhenDone);
-                }
+                if (!ReferenceEquals(obs.destroyWhenDone, null)) Destroy(obs.destroyWhenDone);
             }
 
             _onDone();

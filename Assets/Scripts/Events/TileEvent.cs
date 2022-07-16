@@ -15,7 +15,7 @@
         public readonly ICharacter Character;
 
         /// <summary>
-        /// True if the character is just passing though and will not stay on/attack the tile.
+        ///     True if the character is just passing though and will not stay on/attack the tile.
         /// </summary>
         public readonly bool PassThrough;
 

@@ -1,10 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Events;
 using Interfaces;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class SimpleTile : ITile
 {
