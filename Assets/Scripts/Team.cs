@@ -12,5 +12,5 @@ public class Team
 
     public int Id { get; set; }
 
-    public Color Color { get; set; } = Color.white;
+    public Color Color { get; set; } = Color.gray;
 }

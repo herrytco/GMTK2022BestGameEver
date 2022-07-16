@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     public List<Team> Teams { get; set; } = new();
     public Team GetActiveTeam => Teams[activeTeamIndex];
-    public int RollResult { get; private set; }
+    public int RollResult { get; private set; } = 6;
     public bool AnimatingMovement { get => animatingMovement; set => animatingMovement = value; }
     public int selectedTileId { get; set; }
 
@@ -36,7 +36,8 @@ public class GameManager : MonoBehaviour
     {
         get => textManager;
     }
-    public bool MoveDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+    public bool MoveAnimDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+    public bool WaitForEvents { get => waitForEvents; protected set => waitForEvents = value; }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
 
@@ -66,20 +67,20 @@ public class GameManager : MonoBehaviour
   // Update is called once per frame
     private void Update()
     {
-        if (animatingMovement && !waitForEvents)
+        if (RollResult > 0 && animatingMovement && !WaitForEvents)
         {
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
             SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
         }
 
-        if (moveAnimationDone && !waitForEvents)
+        if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
-
-            animatingMovement = false;
-            moveAnimationDone = false;
+            moveAnimTimer = 0;
+            AnimatingMovement = false;
+            MoveAnimDone = false;
             SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
-            waitForEvents = true;
+            WaitForEvents = true;
 
 
             RollResult--;
@@ -157,11 +158,18 @@ public class GameManager : MonoBehaviour
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
     {
-        waitForEvents = false;
+        Debug.Log("e");
+        WaitForEvents = false;
+        animatingMovement = true;
     }
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
-        waitForEvents = false;
+        WaitForEvents = false;
+        SelectedCharacter.MustLeave = true;
+    }
+    public void RegisterLeaveCallback(ITile tile)
+    {
+        SelectedCharacter.MustLeave = false;
     }
 }

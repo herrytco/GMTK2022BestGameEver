@@ -8,7 +8,7 @@ namespace Interfaces
 {
     public abstract class ITile : MonoBehaviour
     {
-        protected List<ITileEffect> _activeEffects;
+        protected List<ITileEffect> _activeEffects = new List<ITileEffect>();
         public List<ITile> NextTiles { get; protected set; } = new();
         public List<ITile> PrevTiles { get; protected set; } = new();
 
@@ -62,7 +62,7 @@ namespace Interfaces
                 return;
             }
 
-            foreach (var effect in _activeEffects.ToList())
+            foreach (var effect in _activeEffects)
                 if (!effect.OnOccupied(this, attacker))
                 {
                     onDone(this, attacker);
