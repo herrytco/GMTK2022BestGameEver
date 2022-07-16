@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-namespace Interfaces
+namespace Events
 {
     public class EventManager<TEvent> : MonoBehaviour
     {

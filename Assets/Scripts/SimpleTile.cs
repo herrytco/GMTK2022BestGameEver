@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Events;
 using Interfaces;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -19,7 +20,8 @@ public class SimpleTile : ITile
         foreach (var tile in NextTiles) tile.PrevTiles.Add(this);
 
         // initialize effects from children
-        _activeEffects = new List<ITileEffect>(GetComponentsInChildren<ITileEffect>());
+        foreach (var obs in GetComponentsInChildren<IEventObserver<TileEvent>>())
+            AddObserver(obs);
 
         DrawConnections();
     }

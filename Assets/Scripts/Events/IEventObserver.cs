@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Interfaces
+namespace Events
 {
-    public interface IEventObserver<in TEvent>
+    public interface IEventObserver<TEvent>
     {
         public int Priority { get; }
         
