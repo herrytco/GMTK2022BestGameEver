@@ -34,4 +34,11 @@ public class SimpleTile : ITile
             lineRenderer.SetPositions(points);
         }
     }
+
+
+    public ICharacter TestChar;
+    public void TestEvent()
+    {
+        Occupy(TestChar, (_, _) => print("callback called"));
+    }
 }
