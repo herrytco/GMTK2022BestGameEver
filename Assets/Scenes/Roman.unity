@@ -16904,8 +16904,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 759688393}
   m_HandleRect: {fileID: 759688392}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.8045057
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -18076,7 +18076,7 @@ MonoBehaviour:
   m_Content: {fileID: 2126931921}
   m_Horizontal: 0
   m_Vertical: 1
-  m_MovementType: 0
+  m_MovementType: 1
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
@@ -20048,6 +20048,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2126931921}
   - component: {fileID: 2126931922}
+  - component: {fileID: 2126931923}
+  - component: {fileID: 2126931924}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -20070,10 +20072,10 @@ RectTransform:
   m_Father: {fileID: 2069131350}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 300}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2126931922
 MonoBehaviour:
@@ -20088,6 +20090,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollableContainerPrefab: {fileID: 5250416084464173452, guid: 7b34ba0c946aef34f9ba49fd80aeee2c, type: 3}
+--- !u!114 &2126931923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126931920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &2126931924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2126931920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 2
+  m_VerticalFit: 2
 --- !u!114 &2140795080 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9044170433614059972, guid: 8f3cb67bf1274d1419c4b6d98c2b09bf, type: 3}
