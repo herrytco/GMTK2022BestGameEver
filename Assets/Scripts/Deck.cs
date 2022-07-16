@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cards;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Deck : MonoBehaviour
 {
@@ -41,15 +42,10 @@ public class Deck : MonoBehaviour
         _initializeCardBacks();
     }
 
-    private void Update()
+    private void OnMouseUp()
     {
-        if (CanDrawCards && Input.GetMouseButtonDown(0))
-        {
-            var cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var hit = Physics2D.Raycast(cursorPosition, Vector3.back);
-
-            if (hit.collider != null) Draw();
-        }
+        if (CanDrawCards)
+            Draw();
     }
 
     public void Shuffle()
@@ -62,7 +58,12 @@ public class Deck : MonoBehaviour
         deck.Add(card);
         RedrawCardBacks();
     }
-    
+
+    private bool IsCursorOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
     /// <summary>
     ///     Draws the topmost card and returns it. Throws an NoMoreCardsException if there are no cards left.
     /// </summary>

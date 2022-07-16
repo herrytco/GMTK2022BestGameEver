@@ -65,7 +65,7 @@ namespace Cards
                 {
                     _deck.Draw();
                 }
-                catch (NoMoreCardsException _)
+                catch (NoMoreCardsException)
                 {
                     Debug.LogError("More Initial Cards than there are default cards!");
                     break;
