@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Cards
 {
@@ -21,9 +22,7 @@ namespace Cards
         private void Update()
         {
             if (_screenHeight != ScreenHeight || _screenWidth != ScreenWidth)
-            {
                 RedrawCards();
-            }
         }
 
         public void AddCard(AbstractCard card)
@@ -37,7 +36,7 @@ namespace Cards
             for (var i = 0; i < handCards.Count; i++)
             {
                 var handCard = handCards[i];
-                
+
                 var cardSize = handCard.GetComponentInChildren<Renderer>().bounds.size;
 
                 var bottomLeft = Camera.main.ScreenToWorldPoint(Vector3.zero);
@@ -53,14 +52,14 @@ namespace Cards
                 var bottomRightCardSpace = bottomRightPadded + Vector3.left * cardSize.x / 2;
 
                 float widthSegment = (bottomRightCardSpace.x - bottomLeftCardSpace.x) / (handCards.Count + 1);
-                
+
                 handCard.transform.position = bottomLeftCardSpace + Vector3.right * (widthSegment * (i + 1));
-                handCard.AdjustOrderIndex(i*handCards.Count);
+                handCard.AdjustOrderIndex(i * handCards.Count);
             }
         }
 
         private float ScreenHeight => Camera.main.orthographicSize * 2;
-        
-        private float ScreenWidth => ScreenHeight * (Screen.width / (float) Screen.height);
+
+        private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
     }
 }
