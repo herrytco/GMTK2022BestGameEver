@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
 
-[ExecuteInEditMode]
+
 public class SimpleTile : ITile
 {
     public SimpleTile[] myNextTiles;
+    public GameObject LinePrefab;
 
     private void Start()
     {
@@ -17,14 +18,28 @@ public class SimpleTile : ITile
         {
             tile.PrevTiles.Add(this);
         }
+        DrawConnections();
     }
 
     private void OnDrawGizmos()
     {
+        if (NextTiles == null) return;
         foreach (var tile in NextTiles)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(this.transform.position, tile.transform.position);
+        }
+    }
+
+    private void DrawConnections()
+    {
+        if(NextTiles == null) return;
+        foreach (var tile in NextTiles)
+        {
+            Vector3[] points = new[] { transform.position, tile.transform.position };
+            GameObject linePrefab = Instantiate(LinePrefab, transform.position, Quaternion.identity);
+            LineRenderer lineRenderer = linePrefab.GetComponent<LineRenderer>();
+            lineRenderer.SetPositions(points);
         }
     }
 
