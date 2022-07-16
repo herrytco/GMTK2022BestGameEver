@@ -81,12 +81,11 @@ public class GameManager : MonoBehaviour
         if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
-            moveAnimTimer = 0;
-            AnimatingMovement = false;
-            MoveAnimDone = false;
 
-            WaitForEvents = true;
+            animatingMovement = false;
+            moveAnimationDone = false;
             SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
+            waitForEvents = true;
 
 
             RollResult--;
@@ -173,9 +172,7 @@ public class GameManager : MonoBehaviour
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
-        WaitForEvents = false;
-        moveAnimTimer = 0;
-        SelectedCharacter.MustLeave = true;
+        waitForEvents = false;
     }
     public void RegisterLeaveCallback(ITile tile)
     {
