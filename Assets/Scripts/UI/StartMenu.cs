@@ -6,9 +6,7 @@ using UnityEngine.UI;
 
 public class StartMenu : MonoBehaviour
 {
-    public Button playSingleplayer;
-    public Button playLocalMultiplayer;
-    public Button customise;
+    
 
     public GameObject customiseScreenHolder;
     private bool customiseScreenState = false;
