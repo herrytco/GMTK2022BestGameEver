@@ -105,8 +105,6 @@ namespace Interfaces
             StartCoroutine(HandleEffects());
 
             Characters.RemoveAll(c => c == character);
-
-            onDone(this, character);
         }
 
         public Action OnEffectsHandled
