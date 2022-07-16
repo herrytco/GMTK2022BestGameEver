@@ -8,6 +8,7 @@ namespace Events
         public int Priority { get; }
 
         public bool isDone { get; }
+        public bool deregisterWhenDone { get; }
         public GameObject destroyWhenDone { get; }
 
         /// <summary>

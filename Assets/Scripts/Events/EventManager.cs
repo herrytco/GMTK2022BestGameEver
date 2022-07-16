@@ -59,6 +59,7 @@ namespace Events
 
                 obs.OnEvent(_toDoEvent, ResumeHandleEvents);
                 if (!obs.isDone) yield return null;
+                if (obs.deregisterWhenDone) DeregisterObserver(obs);
                 if (!ReferenceEquals(obs.destroyWhenDone, null)) Destroy(obs.destroyWhenDone);
             }
 
