@@ -11,5 +11,7 @@ namespace Interfaces
         public bool Shield { get; private set; }
 
         public GameObject ConfirmationCanvas { get; set; }
+
+        public abstract void AnimateMovement(ITile tile, float t);
     }
 }
