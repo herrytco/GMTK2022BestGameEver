@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class SimpleTile : ITile
 {
     public SimpleTile[] myNextTiles;
@@ -16,10 +17,14 @@ public class SimpleTile : ITile
         {
             tile.PrevTiles.Add(this);
         }
-        
+    }
+
+    private void OnDrawGizmos()
+    {
         foreach (var tile in NextTiles)
         {
-            Debug.DrawLine(this.transform.position, tile.transform.position, Color.red, 10000000000);
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(this.transform.position, tile.transform.position);
         }
     }
 
