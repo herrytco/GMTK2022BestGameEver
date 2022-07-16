@@ -36,11 +36,44 @@ public class PlayerController : ICharacter
     public void ComfirmMovement()
     {
         ConfirmationCanvas.SetActive(false);
-        gameManager.MovePiece(this);
+        gameManager.Moving = true;
+    }
+
+    /// <summary>
+    /// Visits or Occupies next Tile based on onlyVisiting
+    /// </summary>
+    /// <param name="onlyVisiting">should be false if this is the last move</param>
+    /// <param name="moveToTileId">the id of the tile to move to if there is more than one available</param>
+    /// <returns>The tile that is currently occupied or visited</returns>
+    public override void MoveOneStep(bool onlyVisiting, int moveToTileId = 0)
+    {
+        if (CurrentTile.NextTiles.Count > 1 && moveToTileId != 0)
+        {
+            gameManager.EnableTileSelectionUI(CurrentTile);
+            return;
+        }
+
+        CurrentTile = CurrentTile.NextTiles[moveToTileId];
+
+
+        if (onlyVisiting)
+        {
+            CurrentTile.Visit(this, gameManager.RegisterVisitCallback);
+        }
+        else
+        {
+            CurrentTile.Occupy(this, gameManager.RegisterOccupyCallback);
+        }
+        return;
     }
 
     public void DenyMovement()
     {
         ConfirmationCanvas.SetActive(false);
+    }
+
+    public override void AnimateMovement(ITile tile, float t)
+    {
+        
     }
 }

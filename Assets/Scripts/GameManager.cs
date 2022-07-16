@@ -5,6 +5,13 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private int activeTeamIndex;
+    private bool moving;
+    private bool moveDone;
+    private float moveAnimTimer;
+    private List<GameObject> movementSelectionUI;
+    [SerializeField] private GameObject MovementSelectionGO;
+    [SerializeField] private float moveAnimSpeed;
+
 
 
     public ICharacter SelectedCharacter { get; set; }
@@ -12,6 +19,8 @@ public class GameManager : MonoBehaviour
     public List<Team> Teams { get; set; } = new();
     public Team GetActiveTeam => Teams[activeTeamIndex];
     public int RollResult { get; private set; }
+    public bool Moving { get => moving; set => moving = value; }
+    public int selectedTileId { get; set; }
 
     // Start is called before the first frame update
     private void Start()
@@ -23,6 +32,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (moving)
+        {
+            moveAnimTimer += Time.deltaTime * moveAnimSpeed;
+            //SelectedCharacter.AnimateMovement(moveAnimTimer > 1 ? 1 :  moveAnimTimer);
+        }
     }
 
     public void NextTurn()
@@ -32,22 +46,35 @@ public class GameManager : MonoBehaviour
         SelectedCharacter = null;
     }
 
-    public void MovePiece(ICharacter piece)
+
+
+    
+
+    public void EnableTileSelectionUI(ITile tile)
     {
-        piece.CurrentTile.Leave(piece, piece.CurrentTile, (tile, piece) => { });
-        var tile = piece.CurrentTile;
-        for (; RollResult > 0; RollResult--)
+
+        foreach ( ITile nextTile in tile.NextTiles)
         {
-            if (tile.NextTiles.Count > 1)
-                //Enable Tile Selection
-                return;
+            Vector2 dirVec = nextTile.transform.position - tile.transform.position;
+            Vector2 dirUnitVec = dirVec / dirVec.magnitude;
 
-            tile = tile.NextTiles[0];
-
-            tile.Visit(piece, (tile, piece) => { });
+            movementSelectionUI.Add(Instantiate(MovementSelectionGO, dirUnitVec*dirVec.magnitude, Quaternion.identity));
+            MovementSelectionGO.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
         }
+    }
 
-        tile = tile.NextTiles[0];
-        tile.Occupy(piece, (tile, piece) => { });
+    public void DisableTileSelectionUI()
+    {
+
+    }
+
+    public void RegisterVisitCallback(ITile tile, ICharacter piece)
+    {
+
+    }
+
+    public void RegisterOccupyCallback(ITile tile, ICharacter piece)
+    {
+        NextTurn();
     }
 }
