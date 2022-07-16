@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,35 +7,35 @@ namespace Cards
     public abstract class AbstractCard : MonoBehaviour
     {
         private TextMeshProUGUI _costText;
-        private TextMeshProUGUI _titleText;
         private TextMeshProUGUI _descriptionText;
-        private TextMeshProUGUI _flavorText;
         private TextMeshProUGUI _diceText;
+        private TextMeshProUGUI _flavorText;
+        private TextMeshProUGUI _titleText;
 
         private void Start()
         {
-            TextMeshProUGUI[] textboxes = transform.GetComponentsInChildren<TextMeshProUGUI>();
-            
+            var textboxes = transform.GetComponentsInChildren<TextMeshProUGUI>();
+
             foreach (var box in textboxes)
             {
-                string textName = box.name;
+                var textName = box.name;
 
                 if (textName.Contains("cost", StringComparison.CurrentCultureIgnoreCase))
                     _costText = box;
-                
+
                 if (textName.Contains("name", StringComparison.CurrentCultureIgnoreCase))
                     _titleText = box;
-                
+
                 if (textName.Contains("description", StringComparison.CurrentCultureIgnoreCase))
                     _descriptionText = box;
-                
+
                 if (textName.Contains("dice", StringComparison.CurrentCultureIgnoreCase))
                     _diceText = box;
-                
+
                 if (textName.Contains("flavor", StringComparison.CurrentCultureIgnoreCase))
                     _flavorText = box;
             }
-            
+
             UpdateCostText(GetCardData().Costs.ToString());
             UpdateNameText(GetCardData().CardName);
             UpdateDescriptionText(GetCardData().Description);
@@ -49,22 +47,22 @@ namespace Cards
         {
             _costText.text = text;
         }
-        
+
         public void UpdateNameText(string text)
         {
             _titleText.text = text;
         }
-        
+
         public void UpdateDescriptionText(string text)
         {
             _descriptionText.text = text;
         }
-        
+
         public void UpdateDiceText(string text)
         {
             _diceText.text = text;
         }
-        
+
         public void UpdateFlavorText(string text)
         {
             _flavorText.text = text;

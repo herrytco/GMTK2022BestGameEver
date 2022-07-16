@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Cards
@@ -12,7 +10,7 @@ namespace Cards
         [SerializeField] private string description;
         [SerializeField] private string flavorText;
         [SerializeField] private string diceText;
-        
+
         public string CardName => cardName;
         public int Costs => costs;
         public string Description => description;
@@ -20,5 +18,3 @@ namespace Cards
         public string DiceText => diceText;
     }
 }
-
-

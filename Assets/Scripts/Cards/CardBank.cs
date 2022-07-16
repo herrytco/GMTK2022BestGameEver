@@ -1,13 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
 using UnityEngine;
 
 namespace Cards
 {
     public class CardBank : MonoBehaviour
     {
-        [SerializeField] private List<AbstractCard> handCards = new List<AbstractCard>();
+        [SerializeField] private List<AbstractCard> handCards = new();
 
         public void AddCard(AbstractCard card)
         {
@@ -17,16 +15,15 @@ namespace Cards
 
         public void RedrawCards()
         {
-
-            for (int i = 0; i < handCards.Count; i++)
+            for (var i = 0; i < handCards.Count; i++)
             {
-                AbstractCard handCard = handCards[i];
-                
-                Vector3 posNew = Camera.main.ScreenToWorldPoint(
+                var handCard = handCards[i];
+
+                var posNew = Camera.main.ScreenToWorldPoint(
                     new Vector2(0, 0)
                 );
 
-                Vector3 cardSize = handCard.GetComponentInChildren<Renderer>().bounds.size;
+                var cardSize = handCard.GetComponentInChildren<Renderer>().bounds.size;
 
                 posNew.z = 0;
                 posNew.x += cardSize.x / 2 + i * cardSize.x;
