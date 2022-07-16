@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace Interfaces
@@ -32,12 +33,14 @@ namespace Interfaces
         /// <summary>
         /// A character passes through this tile (does not stay/try to occupy)
         /// </summary>
-        public void Visit(ICharacter visitor)
+        public void Visit(ICharacter visitor, [NotNull] Action<ITile, ICharacter> onDone)
         {
             foreach (var effect in _activeEffects.ToList())
             {
                 effect.OnCharacterVisit(this, visitor);
             }
+            
+            onDone(this, visitor);
         }
 
         /// <summary>
@@ -52,11 +55,12 @@ namespace Interfaces
         /// <summary>
         /// A character tries to occupy this tile.
         /// </summary>
-        public void Occupy(ICharacter attacker)
+        public void Occupy(ICharacter attacker, [NotNull] Action<ITile, ICharacter> onDone)
         {
             // if the tile is occupied and the visitor loses the fight, do not process effects
             if (Characters.Count != 0 && !Fight(Characters, attacker))
             {
+                onDone(this, attacker);
                 return;
             }
 
@@ -64,25 +68,31 @@ namespace Interfaces
             {
                 if (!effect.OnOccupied(this, attacker))
                 {
+                    onDone(this, attacker);
                     return;
                 }
             }
+
+            onDone(this, attacker);
         }
 
         /// <summary>
         /// A character (that has occupied this tile previously) leaves this tile.
         /// </summary>
-        public void Leave(ICharacter character, ITile destination)
+        public void Leave(ICharacter character, ITile destination, [NotNull] Action<ITile, ICharacter> onDone)
         {
             foreach (var effect in _activeEffects.ToList())
             {
                 if (!effect.OnLeave(this, character, destination))
                 {
+                    onDone(this, character);
                     return;
                 }
             }
 
             Characters.RemoveAll(c => c == character);
+
+            onDone(this, character);
         }
     }
 }
