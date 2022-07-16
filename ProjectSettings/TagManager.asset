@@ -41,6 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Board
+    uniqueID: 3718236333
+    locked: 0
+  - name: Characters
+    uniqueID: 4144000885
+    locked: 0
+  - name: Effects
+    uniqueID: 510294679
+    locked: 0
   - name: Cards
     uniqueID: 3594216781
     locked: 0
