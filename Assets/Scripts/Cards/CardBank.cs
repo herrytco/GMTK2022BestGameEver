@@ -9,14 +9,11 @@ namespace Cards
         [SerializeField] private List<AbstractCard> handCards = new();
         [SerializeField] private float outerPadding = 10f;
 
-        private Camera _camera;
-
         private float _screenHeight;
         private float _screenWidth;
 
         private void Start()
         {
-            _camera = Camera.main;
             _screenHeight = ScreenHeight;
             _screenWidth = ScreenWidth;
         }
@@ -31,7 +28,7 @@ namespace Cards
 
         public void AddCard(AbstractCard card)
         {
-            handCards.Add(Instantiate(card));
+            handCards.Add(Instantiate(card, transform));
             RedrawCards();
         }
 
@@ -43,7 +40,7 @@ namespace Cards
                 
                 var cardSize = handCard.GetComponentInChildren<Renderer>().bounds.size;
 
-                var bottomLeft = _camera.ScreenToWorldPoint(Vector3.zero);
+                var bottomLeft = Camera.main.ScreenToWorldPoint(Vector3.zero);
                 bottomLeft.z = 0;
                 bottomLeft.y += cardSize.y / 2;
 
@@ -62,7 +59,7 @@ namespace Cards
             }
         }
 
-        private float ScreenHeight => _camera.orthographicSize * 2;
+        private float ScreenHeight => Camera.main.orthographicSize * 2;
         
         private float ScreenWidth => ScreenHeight * (Screen.width / (float) Screen.height);
     }
