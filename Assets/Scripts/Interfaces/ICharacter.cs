@@ -11,5 +11,9 @@ namespace Interfaces
         public bool Shield { get; protected set; }
 
         public GameObject ConfirmationCanvas { get; set; }
+
+        public abstract void AnimateMovement(ITile tile, float t);
+        public abstract void MoveOneStep(bool onlyVisiting, int moveToTileId);
+        public abstract void Kill();
     }
 }

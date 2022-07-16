@@ -1,15 +1,33 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Cards
 {
     public class CardBank : MonoBehaviour
     {
         [SerializeField] private List<AbstractCard> handCards = new();
+        [SerializeField] private float outerPadding = 10f;
+
+        private float _screenHeight;
+        private float _screenWidth;
+
+        private void Start()
+        {
+            _screenHeight = ScreenHeight;
+            _screenWidth = ScreenWidth;
+        }
+
+        private void Update()
+        {
+            if (_screenHeight != ScreenHeight || _screenWidth != ScreenWidth)
+                RedrawCards();
+        }
 
         public void AddCard(AbstractCard card)
         {
-            handCards.Add(Instantiate(card));
+            handCards.Add(Instantiate(card, transform));
             RedrawCards();
         }
 
@@ -19,18 +37,29 @@ namespace Cards
             {
                 var handCard = handCards[i];
 
-                var posNew = Camera.main.ScreenToWorldPoint(
-                    new Vector2(0, 0)
-                );
-
                 var cardSize = handCard.GetComponentInChildren<Renderer>().bounds.size;
 
-                posNew.z = 0;
-                posNew.x += cardSize.x / 2 + i * cardSize.x;
-                posNew.y += cardSize.y / 2;
+                var bottomLeft = Camera.main.ScreenToWorldPoint(Vector3.zero);
+                bottomLeft.z = 0;
+                bottomLeft.y += cardSize.y / 2;
 
-                handCard.transform.position = posNew;
+                var bottomRight = bottomLeft + new Vector3(ScreenWidth, 0, 0);
+
+                var bottomLeftPadded = bottomLeft + Vector3.right * outerPadding;
+                var bottomRightPadded = bottomRight + Vector3.left * outerPadding;
+
+                var bottomLeftCardSpace = bottomLeftPadded + Vector3.right * cardSize.x / 2;
+                var bottomRightCardSpace = bottomRightPadded + Vector3.left * cardSize.x / 2;
+
+                float widthSegment = (bottomRightCardSpace.x - bottomLeftCardSpace.x) / (handCards.Count + 1);
+
+                handCard.transform.position = bottomLeftCardSpace + Vector3.right * (widthSegment * (i + 1));
+                handCard.AdjustOrderIndex(i * handCards.Count);
             }
         }
+
+        private float ScreenHeight => Camera.main.orthographicSize * 2;
+
+        private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
     }
 }

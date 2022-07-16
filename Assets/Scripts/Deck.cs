@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cards;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Deck : MonoBehaviour
 {
@@ -11,37 +13,60 @@ public class Deck : MonoBehaviour
     [SerializeField] private int maxDisplayedCardsInDeck = 4;
     [SerializeField] private float cardOffset = -0.07f;
     [SerializeField] private CardPlaceholder cardPlaceholderPrefab;
+
     [SerializeField] private CardBank cardBank;
+    [SerializeField] private UpDownBumper drawIndicator;
+
+    private static readonly System.Random _rng = new System.Random();
+
     private readonly List<CardPlaceholder> _cardPlaceholders = new();
-
-    private bool _canDrawCards = true;
-
     private int CurrentlyDisplayedCards => Math.Min(deck.Count, maxDisplayedCardsInDeck);
+    private TeamCardManager _teamCardManager;
+    
+    public UpDownBumper DrawIndicator
+    {
+        get => drawIndicator;
+    }
+    
+    public CardBank CardBank
+    {
+        get => cardBank;
+        set => cardBank = value;
+    }
+
+    public TeamCardManager TeamCardManager
+    {
+        get => _teamCardManager;
+        set => _teamCardManager = value;
+    }
+
+    private bool CanDrawCards => TeamCardManager.IsCardDrawEnabled;
 
     private void Start()
     {
         _initializeCardBacks();
     }
 
-    private void Update()
+    private void OnMouseUp()
     {
-        if (_canDrawCards && Input.GetMouseButtonDown(0))
-        {
-            var cursorPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var hit = Physics2D.Raycast(cursorPosition, Vector3.back);
-
-            if (hit.collider != null) Draw();
-        }
+        if (CanDrawCards)
+            Draw();
     }
 
-    public void DisableCardDraw()
+    public void Shuffle()
     {
-        _canDrawCards = false;
+        deck = deck.OrderBy(a => _rng.Next()).ToList();
     }
 
-    public void EnableCardDraw()
+    public void AddCard(AbstractCard card)
     {
-        _canDrawCards = true;
+        deck.Add(card);
+        RedrawCardBacks();
+    }
+
+    private bool IsCursorOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
     }
 
     /// <summary>
@@ -59,15 +84,16 @@ public class Deck : MonoBehaviour
         deck.RemoveAt(0);
         RedrawCardBacks();
 
+        TeamCardManager.ReportDrawnCard(drawnCard);
         cardBank.AddCard(drawnCard);
     }
 
-    public void RedrawCardBacks()
+    private void RedrawCardBacks()
     {
         foreach (var cardPlaceholder in _cardPlaceholders)
             cardPlaceholder.gameObject.SetActive(false);
 
-        for (var i = 0; i < CurrentlyDisplayedCards; i++)
+        for (var i = 0; i < Math.Min(CurrentlyDisplayedCards, _cardPlaceholders.Count); i++)
             _cardPlaceholders[i].gameObject.SetActive(true);
     }
 
