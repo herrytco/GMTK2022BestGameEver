@@ -97,14 +97,4 @@ public class PlayerController : ICharacter
 
         Destroy(this);
     }
-
-    public override void Kill()
-    {
-
-        //Particle Effects
-
-        
-
-        Destroy(this);
-    }
 }
