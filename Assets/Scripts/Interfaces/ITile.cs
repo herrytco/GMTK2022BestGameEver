@@ -24,7 +24,7 @@ namespace Interfaces
         {
             get
             {
-                if (!ReferenceEquals(_eventManager, null)) _eventManager = GetComponent<EventManager<TileEvent>>();
+                if (ReferenceEquals(_eventManager, null)) _eventManager = GetComponent<EventManager<TileEvent>>();
                 return _eventManager;
             }
         }
