@@ -11,5 +11,7 @@ namespace Interfaces
         public bool Shield { get; protected set; }
 
         public GameObject ConfirmationCanvas { get; set; }
+
+        public abstract void Kill();
     }
 }
