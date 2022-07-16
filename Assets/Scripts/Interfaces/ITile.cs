@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using TileEffects;
 using UnityEngine;
 
 namespace Interfaces
@@ -34,9 +36,15 @@ namespace Interfaces
         /// </summary>
         public void Visit(ICharacter visitor, [NotNull] Action<ITile, ICharacter> onDone)
         {
-            foreach (var effect in _activeEffects.ToList()) effect.OnCharacterVisit(this, visitor);
+            HandleEffectAction = effect =>
+            {
+                return effect.OnVisit(this, visitor, () => StartCoroutine(HandleEffects()));
+            };
 
-            onDone(this, visitor);
+            OnEffectsHandled = () => onDone(this, visitor);
+
+            StopCoroutine(HandleEffects());
+            StartCoroutine(HandleEffects());
         }
 
         /// <summary>
@@ -48,7 +56,15 @@ namespace Interfaces
         /// </param>
         /// <param name="attacker">The visiting character.</param>
         /// <returns>True if the attacker wins and occupies the tile.</returns>
-        public abstract bool Fight(List<ICharacter> defenders, ICharacter attacker);
+        public bool Fight(List<ICharacter> defenders, ICharacter attacker)
+        {
+            ITileEffect deathEffect = defenders[0].gameObject.AddComponent<CharacterDeathEffect>();
+            AddEffect(deathEffect);
+
+            Characters = new List<ICharacter> { attacker };
+
+            return true;
+        }
 
         /// <summary>
         ///     A character tries to occupy this tile.
@@ -62,14 +78,15 @@ namespace Interfaces
                 return;
             }
 
-            foreach (var effect in _activeEffects.ToList())
-                if (!effect.OnOccupied(this, attacker))
-                {
-                    onDone(this, attacker);
-                    return;
-                }
+            HandleEffectAction = effect =>
+            {
+                return effect.OnOccupied(this, attacker, () => StartCoroutine(HandleEffects()));
+            };
 
-            onDone(this, attacker);
+            OnEffectsHandled = () => onDone(this, attacker);
+
+            StopCoroutine(HandleEffects());
+            StartCoroutine(HandleEffects());
         }
 
         /// <summary>
@@ -77,16 +94,59 @@ namespace Interfaces
         /// </summary>
         public void Leave(ICharacter character, ITile destination, [NotNull] Action<ITile, ICharacter> onDone)
         {
-            foreach (var effect in _activeEffects.ToList())
-                if (!effect.OnLeave(this, character, destination))
-                {
-                    onDone(this, character);
-                    return;
-                }
+            HandleEffectAction = effect =>
+            {
+                return effect.OnLeave(this, character, destination, () => StartCoroutine(HandleEffects()));
+            };
+
+            OnEffectsHandled = () => onDone(this, character);
+
+            StopCoroutine(HandleEffects());
+            StartCoroutine(HandleEffects());
 
             Characters.RemoveAll(c => c == character);
 
             onDone(this, character);
+        }
+
+        public Action OnEffectsHandled
+        {
+            get => _onEffectsHandled;
+            protected set
+            {
+                if (value != null && _onEffectsHandled != null)
+                    Debug.LogWarning(
+                        "replacing existing OnEffectsHandled; coroutine may not have terminated correctly");
+                if (value == null)
+                    StopCoroutine(HandleEffects());
+                _onEffectsHandled = value;
+            }
+        }
+
+        private Action _onEffectsHandled;
+
+        protected Func<ITileEffect, TileEffectResult> HandleEffectAction;
+
+        protected IEnumerator HandleEffects()
+        {
+            foreach (var effect in _activeEffects.ToList())
+            {
+                TileEffectResult result = HandleEffectAction(effect);
+                if (!result.Done) yield return null; // pause execution until next call
+                
+                Destroy(effect.gameObject);
+                
+                if (result.CharacterRemoved) break;
+            }
+
+            var onEffectsHandled = _onEffectsHandled;
+            _onEffectsHandled = null;
+            onEffectsHandled();
+        }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
         }
     }
 }

@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SimpleTile : ITile
 {
@@ -16,6 +18,9 @@ public class SimpleTile : ITile
         PrevTiles = new List<ITile>();
         foreach (var tile in NextTiles) tile.PrevTiles.Add(this);
 
+        // initialize effects from children
+        _activeEffects = new List<ITileEffect>(GetComponentsInChildren<ITileEffect>());
+
         DrawConnections();
     }
 
@@ -29,10 +34,5 @@ public class SimpleTile : ITile
             var lineRenderer = linePrefab.GetComponent<LineRenderer>();
             lineRenderer.SetPositions(points);
         }
-    }
-
-    public override bool Fight(List<ICharacter> defenders, ICharacter attacker)
-    {
-        throw new NotImplementedException();
     }
 }
