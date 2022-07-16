@@ -9,9 +9,11 @@ public class GameManager : MonoBehaviour
     private int activeTeamIndex = -1;
     private int _round = 1;
     
-    private bool moving;
-    private bool moveDone;
+    private bool animatingMovement;
+    private bool moveAnimationDone;
+    private bool waitForEvents;
     private float moveAnimTimer;
+    public int TargetTileID { private get; set; }
     private List<GameObject> movementSelectionUI;
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
@@ -23,7 +25,7 @@ public class GameManager : MonoBehaviour
     public List<Team> Teams { get; set; } = new();
     public Team GetActiveTeam => Teams[activeTeamIndex];
     public int RollResult { get; private set; }
-    public bool Moving { get => moving; set => moving = value; }
+    public bool AnimatingMovement { get => animatingMovement; set => animatingMovement = value; }
     public int selectedTileId { get; set; }
 
     [SerializeField] private GameObject teamCardManagerPrefab;
@@ -34,6 +36,7 @@ public class GameManager : MonoBehaviour
     {
         get => textManager;
     }
+    public bool MoveDone { get => moveAnimationDone; set => moveAnimationDone = value; }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
 
@@ -63,12 +66,28 @@ public class GameManager : MonoBehaviour
   // Update is called once per frame
     private void Update()
     {
-        if (moving)
+        if (animatingMovement && !waitForEvents)
         {
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
-            //SelectedCharacter.AnimateMovement(moveAnimTimer > 1 ? 1 :  moveAnimTimer);
+            SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
+        }
+
+        if (moveAnimationDone && !waitForEvents)
+        {
+            //Disable movement anim
+
+            animatingMovement = false;
+            moveAnimationDone = false;
+            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
+            waitForEvents = true;
+
+
+            RollResult--;
+
+            TargetTileID = 0;
         }
     }
+
     public void NextTurn()
     {
         if (activeTeamIndex >= 0)
@@ -126,13 +145,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void DisableTileSelectionUi()
+    {
+        foreach (GameObject button in movementSelectionUI)
+        {
+            movementSelectionUI.Remove(button);
+            Destroy(button);
+        }
+    }
+
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
     {
-
+        waitForEvents = false;
     }
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
-        NextTurn();
+        waitForEvents = false;
     }
 }

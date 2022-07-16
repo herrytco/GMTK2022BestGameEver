@@ -4,11 +4,15 @@ using UnityEngine;
 public class PlayerController : ICharacter
 {
     private GameManager gameManager;
+    [SerializeField] private ITile spawn;
 
 
     // Start is called before the first frame update
     private void Start()
     {
+        CurrentTile = spawn;
+        transform.position = CurrentTile.transform.position;
+        spawn.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
@@ -32,13 +36,6 @@ public class PlayerController : ICharacter
         ConfirmationCanvas.SetActive(true);
     }
 
-
-    public void ComfirmMovement()
-    {
-        ConfirmationCanvas.SetActive(false);
-        gameManager.Moving = true;
-    }
-
     /// <summary>
     /// Visits or Occupies next Tile based on onlyVisiting
     /// </summary>
@@ -58,13 +55,18 @@ public class PlayerController : ICharacter
 
         if (onlyVisiting)
         {
-            CurrentTile.Visit(this, gameManager.RegisterVisitCallback);
+            CurrentTile.Visit(this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
         }
         else
         {
-            CurrentTile.Occupy(this, gameManager.RegisterOccupyCallback);
+            CurrentTile.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
         return;
+    }
+    public void ComfirmMovement()
+    {
+        ConfirmationCanvas.SetActive(false);
+        gameManager.AnimatingMovement = true;
     }
 
     public void DenyMovement()
@@ -74,7 +76,16 @@ public class PlayerController : ICharacter
 
     public override void AnimateMovement(ITile tile, float t)
     {
-        
+        //Start Animation
+        //Move Sprite
+        if (t >= 1)
+            t = 1;
+
+        transform.position = Vector2.Lerp(transform.position, tile.transform.position, t);
+
+        //Stop Animation
+        if (t == 1)
+            gameManager.MoveDone = true;
     }
 
     public override void Kill()
