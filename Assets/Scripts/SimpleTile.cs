@@ -18,6 +18,7 @@ public class SimpleTile : ITile
         {
             tile.PrevTiles.Add(this);
         }
+        
         DrawConnections();
     }
 
