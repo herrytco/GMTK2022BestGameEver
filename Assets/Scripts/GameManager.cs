@@ -108,6 +108,7 @@ public class GameManager : MonoBehaviour
         endTurnButton.SetActive(false);
 
         _cardManagers[GetActiveTeam].gameObject.SetActive(true);
+        _cardManagers[GetActiveTeam].IsCardDrawEnabled = true;
     }
 
     /// <summary>

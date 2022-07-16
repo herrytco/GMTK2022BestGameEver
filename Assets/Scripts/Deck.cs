@@ -15,14 +15,19 @@ public class Deck : MonoBehaviour
     [SerializeField] private CardPlaceholder cardPlaceholderPrefab;
 
     [SerializeField] private CardBank cardBank;
+    [SerializeField] private UpDownBumper drawIndicator;
 
-    private static System.Random rng = new System.Random();
+    private static readonly System.Random _rng = new System.Random();
 
     private readonly List<CardPlaceholder> _cardPlaceholders = new();
     private int CurrentlyDisplayedCards => Math.Min(deck.Count, maxDisplayedCardsInDeck);
     private TeamCardManager _teamCardManager;
-
-
+    
+    public UpDownBumper DrawIndicator
+    {
+        get => drawIndicator;
+    }
+    
     public CardBank CardBank
     {
         get => cardBank;
@@ -50,7 +55,7 @@ public class Deck : MonoBehaviour
 
     public void Shuffle()
     {
-        deck = deck.OrderBy(a => rng.Next()).ToList();
+        deck = deck.OrderBy(a => _rng.Next()).ToList();
     }
 
     public void AddCard(AbstractCard card)

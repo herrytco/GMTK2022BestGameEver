@@ -28,6 +28,8 @@ namespace Cards
 
         private GameManager _gameManager;
 
+        private GameObject _drawIndicator;
+
         public GameManager GameManager
         {
             set => _gameManager = value;
@@ -38,14 +40,18 @@ namespace Cards
             get => _team;
             set => _team = value;
         }
-        
+
         public bool IsCardDrawEnabled
         {
             get => _isCardDrawEnabled;
-            set => _isCardDrawEnabled = value;
+            set
+            {
+                _isCardDrawEnabled = value; 
+                _drawIndicator.SetActive(value);
+            }
         }
 
-        private void Start()
+        private void Awake()
         {
             _deck = Instantiate(deckPrefab, transform).GetComponentInChildren<Deck>();
             _bank = Instantiate(cardBankPrefab, transform).GetComponentInChildren<CardBank>();
@@ -53,6 +59,9 @@ namespace Cards
             _deck.transform.position = deckPosition;
             _deck.TeamCardManager = this;
             _deck.CardBank = _bank;
+
+            _drawIndicator = _deck.DrawIndicator.gameObject;
+            Debug.Log(_drawIndicator.name);
 
             foreach (var card in defaultCards)
             {
@@ -75,6 +84,11 @@ namespace Cards
             _deck.Shuffle();
         }
 
+        private void Start()
+        {
+            
+        }
+
         public void AddDrawCallBack(Action<AbstractCard> callback)
         {
             _cardDrawCallbacks.Add(callback);
@@ -82,6 +96,8 @@ namespace Cards
         
         public void ReportDrawnCard(AbstractCard card)
         {
+            IsCardDrawEnabled = false;
+            
             foreach (var cardDrawCallback in _cardDrawCallbacks)
             {
                 cardDrawCallback(card);

@@ -252,6 +252,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2665b06ab62d7bb46ad8e0072d68720d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MovementSelectionGO: {fileID: 0}
+  moveAnimSpeed: 0
   teamCardManagerPrefab: {fileID: 8155156949143636122, guid: b229dc2a3aa59454d8ead29535f97ef8, type: 3}
   endTurnButton: {fileID: 209718706}
   textManager: {fileID: 105513947}
@@ -449,5 +451,9 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 726226755}
+    - target: {fileID: 3117224100882233937, guid: 8304c76df750fce42a862f871eb5c255, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8304c76df750fce42a862f871eb5c255, type: 3}

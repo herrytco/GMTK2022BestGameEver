@@ -20,6 +20,13 @@ namespace Cards
         private bool _scaleUpCoroutineIsRunning = false;
         private bool _scaleDownCoroutineIsRunning = false;
         private bool _scaledUp = false;
+        private bool _shouldResize = true;
+
+        public bool ShouldResize
+        {
+            get => _shouldResize;
+            set => _shouldResize = value;
+        }
 
         private void Start()
         {
@@ -98,7 +105,7 @@ namespace Cards
 
         private void OnMouseOver()
         {
-            if (_scaleDownCoroutineIsRunning)
+            if (_scaleDownCoroutineIsRunning && _shouldResize)
             {
                 StopCoroutine("ScaleDown");
                 _scaleDownCoroutineIsRunning = false;
