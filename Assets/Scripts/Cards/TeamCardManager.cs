@@ -17,17 +17,33 @@ namespace Cards
         
         [SerializeField] private GameObject cardBankPrefab;
 
+        [SerializeField] private int initialCardsOnHand = 6;
+
         private Deck _deck;
         private CardBank _bank;
         private bool _isCardDrawEnabled = true;
+        private Team _team;
+
+        private readonly List<Action<AbstractCard>> _cardDrawCallbacks = new();
+
+        private GameManager _gameManager;
+
+        public GameManager GameManager
+        {
+            set => _gameManager = value;
+        }
+
+        public Team Team
+        {
+            get => _team;
+            set => _team = value;
+        }
         
         public bool IsCardDrawEnabled
         {
             get => _isCardDrawEnabled;
             set => _isCardDrawEnabled = value;
         }
-
-        private readonly List<Action<AbstractCard>> _cardDrawCallbacks = new();
 
         private void Start()
         {
@@ -42,6 +58,20 @@ namespace Cards
             {
                 _deck.AddCard(card);
             }
+
+            for (int i = 0; i < initialCardsOnHand; i++)
+            {
+                try
+                {
+                    _deck.Draw();
+                }
+                catch (NoMoreCardsException _)
+                {
+                    Debug.LogError("More Initial Cards than there are default cards!");
+                    break;
+                }
+            }
+            
             _deck.Shuffle();
         }
 
