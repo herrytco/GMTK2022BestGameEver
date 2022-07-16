@@ -43,4 +43,14 @@ public class PlayerController : ICharacter
     {
         ConfirmationCanvas.SetActive(false);
     }
+
+    public override void Kill()
+    {
+
+        //Particle Effects
+
+        
+
+        Destroy(this);
+    }
 }
