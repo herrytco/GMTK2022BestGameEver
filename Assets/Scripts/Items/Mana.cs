@@ -10,7 +10,7 @@ namespace Items
     {
         public int Priority => 3;
         public bool isDone { get; private set; } = false;
-        public bool deregisterWhenDone => true;
+        public bool deregisterWhenDone { get; private set; } = false;
 
         public float effectDuration = 2f;
 
@@ -18,8 +18,13 @@ namespace Items
 
         public void OnEvent(TileEvent evnt, Action onDone)
         {
-            if (evnt is not TileVisitEvent tileVisitEvent) return;
-            if (tileVisitEvent.PassThrough) return;
+            if (evnt is not TileVisitEvent { PassThrough: false } visitEvent)
+            {
+                // irrelevant event, signal that the EventManager can continue
+                isDone = true;
+                onDone();
+                return;
+            }
 
             _onDone = onDone;
             _pickUpEffectActive = true;
@@ -47,9 +52,13 @@ namespace Items
                 // TODO give character mana
                 print("mana count not implemented lol");
 
-                _pickUpEffectActive = false;
+                // done with animation, signal that the EventManager can continue
+                deregisterWhenDone = true; // and dont call me anymore!
                 isDone = true;
                 _onDone();
+                
+                // dispose this
+                _pickUpEffectActive = false;
                 enabled = false;
                 Destroy(gameObject);
             }
