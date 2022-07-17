@@ -13,7 +13,7 @@ public class SimpleCharacter : ICharacter
         throw new System.NotImplementedException();
     }
 
-    public override void Kill()
+    public override void TryKill()
     {
         Destroy(gameObject);
     }
