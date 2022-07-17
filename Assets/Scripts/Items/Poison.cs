@@ -27,7 +27,7 @@ namespace Items
             foreach (var character in tile.Characters.ToList())
             {
                 print($"killing {character.Name}");
-                character.Kill();
+                character.TryKill();
             }
 
             tile.Characters = new();
