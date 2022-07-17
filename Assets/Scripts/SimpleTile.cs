@@ -29,10 +29,12 @@ public class SimpleTile : ITile
         if (NextTiles == null) return;
         foreach (var tile in NextTiles)
         {
-            Vector3[] points = { transform.position, tile.transform.position };
             var linePrefab = Instantiate(LinePrefab, gameObject.transform);
             var lineRenderer = linePrefab.GetComponent<LineRenderer>();
-            lineRenderer.SetPositions(points);
+            lineRenderer.SetPositions(new[] {
+                Vector3.zero, // transform.InverseTransformPoint(transform.position),
+                transform.InverseTransformPoint(tile.transform.position)
+            });
         }
     }
 
@@ -45,7 +47,7 @@ public class SimpleTile : ITile
     }
 
     private bool _testWaiting;
-    
+
     public IEnumerator TestRoutine()
     {
         _testWaiting = true;
@@ -54,13 +56,13 @@ public class SimpleTile : ITile
 
         print("occupied, waiting");
         yield return new WaitForSeconds(1f);
-        
+
         for (int i = 0; i < 4; i++)
         {
             _testWaiting = true;
             TurnProgress(null, 0, false, (_) => _testWaiting = false);
             yield return new WaitWhile(() => _testWaiting);
-            
+
             print("turn completed, waiting");
             yield return new WaitForSeconds(1f);
         }
