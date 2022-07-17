@@ -124,6 +124,6 @@ public class PieceController : ICharacter
 
         
 
-        Destroy(this);
+        Destroy(gameObject);
     }
 }

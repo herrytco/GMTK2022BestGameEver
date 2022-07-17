@@ -1,5 +1,6 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
+using Events;
 using Interfaces;
 using UnityEngine;
 
@@ -16,6 +17,10 @@ public class SimpleTile : ITile
         PrevTiles = new List<ITile>();
         foreach (var tile in NextTiles) tile.PrevTiles.Add(this);
 
+        // initialize effects from children
+        foreach (var obs in GetComponentsInChildren<IEventObserver<TileEvent>>())
+            AddObserver(obs);
+
         DrawConnections();
     }
 
@@ -31,8 +36,33 @@ public class SimpleTile : ITile
         }
     }
 
-    public override bool Fight(List<ICharacter> defenders, ICharacter attacker)
+    public ICharacter TestChar;
+
+    public void TestEvent()
     {
-        throw new NotImplementedException();
+        if (Characters.Count == 0) Characters.Add(TestChar);
+        StartCoroutine(TestRoutine());
+    }
+
+    private bool _testWaiting;
+    
+    public IEnumerator TestRoutine()
+    {
+        _testWaiting = true;
+        Occupy(TestChar, (_, _) => _testWaiting = false);
+        yield return new WaitWhile(() => _testWaiting);
+
+        print("occupied, waiting");
+        yield return new WaitForSeconds(1f);
+        
+        for (int i = 0; i < 4; i++)
+        {
+            _testWaiting = true;
+            TurnProgress(0, false, (_) => _testWaiting = false);
+            yield return new WaitWhile(() => _testWaiting);
+            
+            print("turn completed, waiting");
+            yield return new WaitForSeconds(1f);
+        }
     }
 }
