@@ -6,7 +6,7 @@ public class PieceController : ICharacter
 {
     private GameManager gameManager;
     GameObject shieldGO;
-    
+
     [SerializeField] private ITile spawn;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
     [SerializeField] private GameObject selectionArrows;
@@ -16,10 +16,10 @@ public class PieceController : ICharacter
         set => playerSpriteRenderer.color = value;
     }
 
-    public bool SelectionArrowsEnabled
+    override
+        public GameObject SelectionUI
     {
-        get => selectionArrows.gameObject.activeInHierarchy;
-        set => selectionArrows.SetActive(value);
+        get => selectionArrows;
     }
 
     public ITile Spawn
@@ -40,9 +40,10 @@ public class PieceController : ICharacter
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
         gameManager.SelectedCharacter = this;
-        CurrentTile.Occupy(gameManager, this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
+        CurrentTile.Occupy(gameManager, this,
+            (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
-    
+
     private void OnMouseDown()
     {
         Debug.Log("RollResult: " + gameManager.RollResult + "\nWaitforevents: " + gameManager.WaitForEvents);
@@ -67,7 +68,8 @@ public class PieceController : ICharacter
         if (MustLeave)
         {
             MustLeave = false;
-           CurrentTile.Leave(gameManager, this, CurrentTile, (ITile tile, ICharacter character) => gameManager.RegisterLeaveCallback(tile));
+            CurrentTile.Leave(gameManager, this, CurrentTile,
+                (ITile tile, ICharacter character) => gameManager.RegisterLeaveCallback(tile));
         }
 
         if (moveToTileId == -1)
@@ -80,16 +82,17 @@ public class PieceController : ICharacter
 
         if (onlyVisiting)
         {
-
             Debug.Log("SHEESH");
-            CurrentTile.Visit(gameManager, this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
+            CurrentTile.Visit(gameManager, this,
+                (tile, character) => gameManager.RegisterVisitCallback(tile, character));
         }
         else
         {
-
             Debug.Log("oi");
-            CurrentTile.Occupy(gameManager, this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
+            CurrentTile.Occupy(gameManager, this,
+                (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
+
         return;
     }
 
@@ -106,6 +109,7 @@ public class PieceController : ICharacter
 
         return false;
     }
+
     public void ComfirmMovement()
     {
         ConfirmationCanvas.SetActive(false);
@@ -146,7 +150,6 @@ public class PieceController : ICharacter
 
         //Particle Effects
 
-        
 
         Destroy(gameObject);
     }
@@ -155,5 +158,10 @@ public class PieceController : ICharacter
     {
         shieldGO.SetActive(true);
         Shield = true;
+    }
+
+    public GameManager GameManager
+    {
+        get => gameManager;
     }
 }

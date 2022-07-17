@@ -68,7 +68,7 @@ public class GameManager : MonoBehaviour
     }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
-    private readonly Dictionary<Team, List<PieceController>> _teamPieces = new();
+    private readonly Dictionary<Team, List<ICharacter>> _teamPieces = new();
 
     private SimpleTile[] _mapTiles;
 
@@ -100,7 +100,7 @@ public class GameManager : MonoBehaviour
             _cardManagers[team] = mng;
 
             // spawn the players (on random tiles #fixme)
-            List<PieceController> teamPieces = new();
+            List<ICharacter> teamPieces = new();
 
             Color teamColor = teamColors[Teams.IndexOf(team)];
 
@@ -125,6 +125,12 @@ public class GameManager : MonoBehaviour
 
         // start the first turn
         NextTurn();
+    }
+
+    public void SaveCharacterSelection()
+    {
+        SelectedCharacter.SelectionUI.SetActive(false);
+        _inCharSelectionMode = false;
     }
 
     private void Update()
@@ -161,6 +167,47 @@ public class GameManager : MonoBehaviour
 
             TargetTileID = -1;
         }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+            int indexCurrentlySelectedChar = pieces.IndexOf(SelectedCharacter);
+            int indexNext = indexCurrentlySelectedChar + 1;
+            if (indexNext == pieces.Count)
+                indexNext = 0;
+
+            ChangeCurrentlySelectedCharacter(indexNext);
+        }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+            int indexCurrentlySelectedChar = pieces.IndexOf(SelectedCharacter);
+            int indexNext = indexCurrentlySelectedChar - 1;
+            if (indexNext == -1)
+                indexNext = pieces.Count - 1;
+
+            ChangeCurrentlySelectedCharacter(indexNext);
+        }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter))
+        {
+            SaveCharacterSelection();
+        }
+    }
+
+    private void ChangeCurrentlySelectedCharacter(int indexNew)
+    {
+        List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+        SelectedCharacter.SelectionUI.SetActive(false);
+
+        SelectedCharacter = pieces[indexNew];
+        cameraController.JumpToPiece(SelectedCharacter);
+
+        SelectedCharacter.SelectionUI.SetActive(true);
     }
 
     public void NextTurn()
@@ -247,15 +294,19 @@ public class GameManager : MonoBehaviour
 
     private void EnableCharSelectionUI()
     {
+        mapHolder.GetComponent<RightClickDraggable>().Enabled = false;
+
         Team activeTeam = GetActiveTeam;
-        
+
         TextManager.SetMessage("Choose one of your pieces");
         _inCharSelectionMode = true;
 
-        PieceController firstPiece = _teamPieces[activeTeam][0];
-        
+        ICharacter firstPiece = _teamPieces[activeTeam][0];
+
         cameraController.JumpToPiece(firstPiece);
-        firstPiece.SelectionArrowsEnabled = true;
+        firstPiece.SelectionUI.SetActive(true);
+
+        SelectedCharacter = firstPiece;
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)

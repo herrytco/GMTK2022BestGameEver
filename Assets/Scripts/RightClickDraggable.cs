@@ -7,6 +7,12 @@ public class RightClickDraggable : MonoBehaviour
 {
     private Camera _camera;
     private bool _currentlyDragging = false;
+    private bool _enabled = true;
+
+    public bool Enabled
+    {
+        set => _enabled = value;
+    }
 
     private Vector3 _mouseOrig;
     private Vector3 _objectOrig;
@@ -24,6 +30,8 @@ public class RightClickDraggable : MonoBehaviour
 
     private void Update()
     {
+        if (!_enabled) return;
+        
         if (Input.GetMouseButtonDown(1) && !_currentlyDragging)
         {
             _currentlyDragging = true;
