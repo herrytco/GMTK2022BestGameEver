@@ -6,7 +6,7 @@ using Random = System.Random;
 
 namespace DefaultNamespace
 {
-    public class GameData 
+    public class GameData
     {
         #region Singleton
 
@@ -27,7 +27,7 @@ namespace DefaultNamespace
 
         #endregion
 
-        
+
         public List<Team> _teams = new List<Team>();
         private int currentTeamSize = 1;
 
@@ -67,16 +67,17 @@ namespace DefaultNamespace
                 if (characters.Contains(name)) name = RandomName();
                 characters.Add(name);
             }
+
             return characters;
         }
 
         String RandomName()
         {
             Random rnd = new Random();
-            int num = rnd.Next(0,randomCharacterNames.Length);
+            int num = rnd.Next(0, randomCharacterNames.Length);
             return randomCharacterNames[num];
         }
-        
+
         /// <summary>
         /// Adds one Team
         /// </summary>
@@ -97,14 +98,14 @@ namespace DefaultNamespace
             _teams.RemoveAt(currentTeam);
         }
 
-        
+
         /// <summary>
         /// Adds one additional default player character to all teams
         /// </summary>
         public void AddPlayersPerTeam()
         {
             currentTeamSize++;
-            if (_teams == null) return;
+            if (_teams == null || _teams.Count <= 0) return;
             foreach (var team in _teams)
             {
                 team.characterNames.Add(RandomName());
@@ -112,20 +113,18 @@ namespace DefaultNamespace
         }
 
         /// <summary>
-        /// Subtracts last player character from current team
+        /// Subtracts last player character from all teams
         /// </summary>
         public void RemovePlayersPerTeam()
         {
-            if (currentTeamSize > 1) currentTeamSize--;
+            if (currentTeamSize <= 1) return;
+            
+            currentTeamSize--;
             if (_teams == null || _teams.Count <= 0) return;
             foreach (var team in _teams)
             {
-                team.characterNames.RemoveAt(_teams.Count-1);
+                team.characterNames.RemoveAt(team.characterNames.Count - 1);
             }
         }
-
-
-
-
     }
 }

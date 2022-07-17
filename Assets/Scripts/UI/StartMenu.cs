@@ -36,7 +36,9 @@ public class StartMenu : MonoBehaviour
     void UpdateUI()
     {
         List<Team> currentTeams = GameData.Instance._teams;
+        teamDropdown.options.Clear();
 
+        if (currentTeams.Count <= 0) return;
         foreach (var team in currentTeams)
         {
             TMP_Dropdown.OptionData t = new TMP_Dropdown.OptionData(team.Name);
@@ -47,7 +49,7 @@ public class StartMenu : MonoBehaviour
         DrawPlayerList(currentTeams[teamDropdown.value]);
 
         if (teamSizeText == null) return;
-        teamSizeText.SetText("Players per team: " + currentTeams.Count);
+        teamSizeText.SetText("Players per team: " + currentTeams[0].characterNames.Count);
     }
 
     /// <summary>
