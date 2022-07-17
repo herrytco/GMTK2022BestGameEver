@@ -61,5 +61,13 @@ namespace Interfaces
                 onDone(this, character);
             });
         }
+        
+        /// <summary>
+        ///     A game turn has begun/ended.
+        /// </summary>
+        public void TurnProgress(int turnNumber, bool isBeginningOfTurn, [NotNull] Action<ITile> onDone)
+        {
+            EventManager.Emit(new TileTurnEvent(this, isBeginningOfTurn, turnNumber), () => onDone(this));
+        }
     }
 }

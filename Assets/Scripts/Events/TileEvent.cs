@@ -4,10 +4,7 @@
     {
         public readonly ITile Tile;
 
-        protected TileEvent(ITile tile)
-        {
-            Tile = tile;
-        }
+        protected TileEvent(ITile tile) => Tile = tile;
     }
 
     public class TileVisitEvent : TileEvent
@@ -36,9 +33,23 @@
         /// <summary>
         ///     A character leaves (starts moving from) a tile (not just passed through).
         /// </summary>
-        public TileLeaveEvent(ITile tile, ICharacter character) : base(tile)
+        public TileLeaveEvent(ITile tile, ICharacter character) : base(tile) => Character = character;
+    }
+
+    public class TileTurnEvent : TileEvent
+    {
+        public readonly bool IsAtBeginningOfTurn;
+        public readonly int TurnCount;
+        
+        public bool IsAtEndOfTurn => !IsAtBeginningOfTurn;
+
+        /// <summary>
+        ///     A game turn ends.
+        /// </summary>
+        public TileTurnEvent(ITile tile, bool isAtBeginningOfTurn, int turnCount) : base(tile)
         {
-            Character = character;
+            IsAtBeginningOfTurn = isAtBeginningOfTurn;
+            TurnCount = turnCount;
         }
     }
 }
