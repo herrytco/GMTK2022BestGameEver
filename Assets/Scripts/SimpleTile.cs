@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Events;
 using Interfaces;
@@ -35,17 +36,33 @@ public class SimpleTile : ITile
         }
     }
 
-
-    private int testVar = 0;
-
     public ICharacter TestChar;
 
     public void TestEvent()
     {
-        Occupy(TestChar, (_, _) =>
+        if (Characters.Count == 0) Characters.Add(TestChar);
+        StartCoroutine(TestRoutine());
+    }
+
+    private bool _testWaiting;
+    
+    public IEnumerator TestRoutine()
+    {
+        _testWaiting = true;
+        Occupy(TestChar, (_, _) => _testWaiting = false);
+        yield return new WaitWhile(() => _testWaiting);
+
+        print("occupied, waiting");
+        yield return new WaitForSeconds(1f);
+        
+        for (int i = 0; i < 4; i++)
         {
-            testVar++;
-            print($"callback called {testVar}");
-        });
+            _testWaiting = true;
+            TurnProgress(0, false, (_) => _testWaiting = false);
+            yield return new WaitWhile(() => _testWaiting);
+            
+            print("turn completed, waiting");
+            yield return new WaitForSeconds(1f);
+        }
     }
 }

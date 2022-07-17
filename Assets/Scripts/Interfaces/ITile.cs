@@ -12,13 +12,7 @@ namespace Interfaces
         public List<ITile> NextTiles { get; protected set; } = new();
         public List<ITile> PrevTiles { get; protected set; } = new();
 
-        public List<ICharacter> Characters
-        {
-            get => _characters;
-            protected set => _characters = value;
-        }
-
-        private List<ICharacter> _characters = new();
+        public List<ICharacter> Characters = new();
 
         protected EventManager<TileEvent> EventManager
         {
@@ -57,7 +51,7 @@ namespace Interfaces
         {
             EventManager.Emit(new TileLeaveEvent(this, character), () =>
             {
-                _characters = new List<ICharacter>();
+                Characters = new List<ICharacter>();
                 onDone(this, character);
             });
         }
