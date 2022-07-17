@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     private bool moveAnimationDone;
     private bool waitForEvents;
     private float moveAnimTimer;
+
+    public int ActiveTeamMana { get; set; }
     public int TargetTileID { private get; set; } = -1;
     private List<GameObject> movementSelectionUI = new();
     
@@ -136,6 +138,8 @@ public class GameManager : MonoBehaviour
 
         _cardManagers[GetActiveTeam].gameObject.SetActive(true);
         _cardManagers[GetActiveTeam].IsCardDrawEnabled = true;
+
+        ActiveTeamMana = GetActiveTeam.ManaCapacity;
     }
 
     /// <summary>
@@ -203,5 +207,24 @@ public class GameManager : MonoBehaviour
     public void GiveActiveTeamMana()
     {
         GetActiveTeam.ManaCapacity++;
+        ActiveTeamMana++;
+    }
+
+    /// <summary>
+    /// Uses mana of the active team.
+    /// </summary>
+    /// <param name="amount">The amount of mana.</param>
+    /// <returns>true if mana was consumed. false if amount exceeded the available mana</returns>
+    public bool UseMana(int amount)
+    {
+        int tmpMana = ActiveTeamMana - amount;
+
+        if (tmpMana < 0)
+        {
+            return false;
+        }
+
+        ActiveTeamMana = tmpMana;
+        return true;
     }
 }
