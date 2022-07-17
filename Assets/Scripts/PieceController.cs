@@ -1,3 +1,4 @@
+using System;
 using Interfaces;
 using UnityEngine;
 
@@ -7,12 +8,18 @@ public class PieceController : ICharacter
     GameObject shieldGO;
     
     [SerializeField] private ITile spawn;
+    [SerializeField] private SpriteRenderer playerSpriteRenderer;
+
+    public Color PieceTint
+    {
+        set => playerSpriteRenderer.color = value;
+    }
 
     public ITile Spawn
     {
         set => spawn = value;
     }
-    
+
     public void SpawnPiece()
     {
         CurrentTile = spawn;

@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private CameraController cameraController;
     [SerializeField] private PieceController piecePrefab;
     [SerializeField] private GameObject mapHolder;
+    [SerializeField] private List<Color> teamColors;
 
     private bool _inCharSelectionMode = false;
     private AbstractCard _cardAwaitingToBeExecuted;
@@ -81,7 +82,6 @@ public class GameManager : MonoBehaviour
         List<SimpleTile> possibleSpawnTiles = _mapTiles.ToList();
         possibleSpawnTiles = possibleSpawnTiles.OrderBy(a => Rng.Next()).ToList();
         
-
         Debug.Log("Map has " + _mapTiles.Length + " tiles");
 
         // disable the end-turn button on startup
@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviour
             // spawn the players (on random tiles #fixme)
             List<PieceController> teamPieces = new();
 
+            Color teamColor = teamColors[Teams.IndexOf(team)];
+
             for (int i = 0; i < piecesPerTeam; i++)
             {
                 PieceController piece = Instantiate(piecePrefab, mapHolder.transform);
@@ -113,6 +115,7 @@ public class GameManager : MonoBehaviour
                 piece.SpawnPiece();
 
                 piece.name = "Piece "+(i+1)+" ("+team.Name+")";
+                piece.PieceTint = teamColor;
                 
                 teamPieces.Add(piece);
             }
