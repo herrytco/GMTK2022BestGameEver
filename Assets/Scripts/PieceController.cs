@@ -1,3 +1,4 @@
+using System;
 using Interfaces;
 using UnityEngine;
 
@@ -6,13 +7,31 @@ public class PieceController : ICharacter
 {
     private GameManager gameManager;
     GameObject shieldGO;
+    
     [SerializeField] private ITile spawn;
     public AudioClip shieldSound;
     public AudioClip shieldSoundBreak;
     private AudioSource audioSource;
+    [SerializeField] private SpriteRenderer playerSpriteRenderer;
+    [SerializeField] private GameObject selectionArrows;
 
-    // Start is called before the first frame update
-    private void Start()
+    public Color PieceTint
+    {
+        set => playerSpriteRenderer.color = value;
+    }
+
+    public bool SelectionArrowsEnabled
+    {
+        get => selectionArrows.gameObject.activeInHierarchy;
+        set => selectionArrows.SetActive(value);
+    }
+
+    public ITile Spawn
+    {
+        set => spawn = value;
+    }
+
+    public void SpawnPiece()
     {
         audioSource = GetComponent<AudioSource>();
         CurrentTile = spawn;
@@ -23,18 +42,12 @@ public class PieceController : ICharacter
         shieldGO = transform.Find("Shield").gameObject;
         shieldGO.SetActive(false);
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
         gameManager.SelectedCharacter = this;
         CurrentTile.Occupy(gameManager, this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
-
-    // Update is called once per frame
-    private void Update()
-    {
-    }
-
+    
     private void OnMouseDown()
     {
         Debug.Log("RollResult: " + gameManager.RollResult + "\nWaitforevents: " + gameManager.WaitForEvents);

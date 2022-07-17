@@ -29,10 +29,12 @@ public class SimpleTile : ITile
         if (NextTiles == null) return;
         foreach (var tile in NextTiles)
         {
-            Vector3[] points = { transform.position, tile.transform.position };
             var linePrefab = Instantiate(LinePrefab, gameObject.transform);
             var lineRenderer = linePrefab.GetComponent<LineRenderer>();
-            lineRenderer.SetPositions(points);
+            lineRenderer.SetPositions(new[] {
+                Vector3.zero, // transform.InverseTransformPoint(transform.position),
+                transform.InverseTransformPoint(tile.transform.position)
+            });
         }
     }
 
