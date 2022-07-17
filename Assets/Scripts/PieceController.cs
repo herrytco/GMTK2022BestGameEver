@@ -5,12 +5,15 @@ public class PieceController : ICharacter
 {
     private GameManager gameManager;
     GameObject shieldGO;
+    
     [SerializeField] private ITile spawn;
 
-
-
-    // Start is called before the first frame update
-    private void Start()
+    public ITile Spawn
+    {
+        set => spawn = value;
+    }
+    
+    public void SpawnPiece()
     {
         CurrentTile = spawn;
         transform.position = CurrentTile.transform.position;
@@ -18,18 +21,12 @@ public class PieceController : ICharacter
         shieldGO = transform.Find("Shield").gameObject;
         shieldGO.SetActive(false);
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
         gameManager.SelectedCharacter = this;
         CurrentTile.Occupy(gameManager, this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
-
-    // Update is called once per frame
-    private void Update()
-    {
-    }
-
+    
     private void OnMouseDown()
     {
         Debug.Log("RollResult: " + gameManager.RollResult + "\nWaitforevents: " + gameManager.WaitForEvents);

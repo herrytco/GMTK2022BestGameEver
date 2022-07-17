@@ -244,7 +244,7 @@ namespace Cards
             _scaledUp = true;
         }
 
-        public abstract void ExecuteEffect();
+        public abstract void ExecuteEffect(GameManager manager);
 
         public abstract CardData GetCardData();
         
