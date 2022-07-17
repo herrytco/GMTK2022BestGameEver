@@ -1,3 +1,4 @@
+using Interfaces;
 using UnityEngine;
 
 namespace Cards
@@ -11,8 +12,16 @@ namespace Cards
             return data;
         }
 
-        public override void ExecuteEffect()
+        public override void ExecuteEffect(GameManager manager)
         {
+            try
+            {
+                ICharacter selectedChar = manager.GetSelectedCharacterForCardExecution(this);
+            }
+            catch (NoCharacterSelectedException)
+            {
+                Debug.Log("No char selected, ... aborting!");
+            }
         }
     }
 }

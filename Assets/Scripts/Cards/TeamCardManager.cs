@@ -121,8 +121,9 @@ namespace Cards
 
         public void ReportSkillUse(AbstractCard card)
         {
+            card.ExecuteEffect(_gameManager);
             Destroy(card.gameObject);
-            _gameManager.PlayerUsedSkills();
+            _gameManager.PlayerUsedSkills(card);
         }
 
         public void ReportDiceRoll(AbstractCard card)

@@ -12,8 +12,9 @@ namespace Interfaces
         public bool MustLeave { get; set; }
 
         public Animator PieceAnimator { get; protected set; }
-
         public GameObject ConfirmationCanvas { get; set; }
+        
+        public virtual GameObject SelectionUI { get; }
 
         public abstract void AnimateMovement(ITile tile, float t);
         public abstract void MoveOneStep(bool onlyVisiting, int moveToTileId);
