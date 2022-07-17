@@ -5,9 +5,13 @@ using Interfaces;
 using UI;
 using Unity.VisualScripting;
 using UnityEngine;
-
+[RequireComponent(typeof(AudioSource))]
 public class GameManager : MonoBehaviour
 {
+    //AUDIO
+    public AudioClip manaPotionPickup;
+    AudioSource audioSource;
+    
     private int activeTeamIndex = -1;
     private int _round = 1;
 
@@ -74,6 +78,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         Teams.Add(new Team("Red Hawks", 0));
         Teams.Add(new Team("Blue Giraffes", 1));
 
@@ -297,6 +302,7 @@ public class GameManager : MonoBehaviour
             return false;
         }
 
+        if(audioSource!=null && manaPotionPickup != null) audioSource.PlayOneShot(manaPotionPickup);
         ActiveTeamMana = tmpMana;
         return true;
     }
