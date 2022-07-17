@@ -16,6 +16,8 @@ namespace Items
 
         private Action _onDone;
 
+        private Team _team;
+
         public void OnEvent(TileEvent evnt, Action onDone)
         {
             if (evnt is not TileVisitEvent { PassThrough: false } visitEvent)
@@ -26,6 +28,8 @@ namespace Items
                 return;
             }
 
+            _team = visitEvent.Character.Team;
+            
             _onDone = onDone;
             _pickUpEffectActive = true;
             _pickUpEffectStart = Time.time;

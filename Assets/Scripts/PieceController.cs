@@ -18,7 +18,7 @@ public class PieceController : ICharacter
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
         gameManager.SelectedCharacter = this;
-        CurrentTile.Occupy(this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
+        CurrentTile.Occupy(gameManager, this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
 
     // Update is called once per frame
@@ -50,7 +50,7 @@ public class PieceController : ICharacter
         if (MustLeave)
         {
             MustLeave = false;
-           CurrentTile.Leave(this, CurrentTile, (ITile tile, ICharacter character) => gameManager.RegisterLeaveCallback(tile));
+           CurrentTile.Leave(gameManager, this, CurrentTile, (ITile tile, ICharacter character) => gameManager.RegisterLeaveCallback(tile));
         }
 
         if (moveToTileId == -1)
@@ -65,13 +65,13 @@ public class PieceController : ICharacter
         {
 
             Debug.Log("SHEESH");
-            CurrentTile.Visit(this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
+            CurrentTile.Visit(gameManager, this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
         }
         else
         {
 
             Debug.Log("oi");
-            CurrentTile.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
+            CurrentTile.Occupy(gameManager, this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
         return;
     }

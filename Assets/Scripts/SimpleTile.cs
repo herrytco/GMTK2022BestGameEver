@@ -49,7 +49,7 @@ public class SimpleTile : ITile
     public IEnumerator TestRoutine()
     {
         _testWaiting = true;
-        Occupy(TestChar, (_, _) => _testWaiting = false);
+        Occupy(null, TestChar, (_, _) => _testWaiting = false);
         yield return new WaitWhile(() => _testWaiting);
 
         print("occupied, waiting");
@@ -58,7 +58,7 @@ public class SimpleTile : ITile
         for (int i = 0; i < 4; i++)
         {
             _testWaiting = true;
-            TurnProgress(0, false, (_) => _testWaiting = false);
+            TurnProgress(null, 0, false, (_) => _testWaiting = false);
             yield return new WaitWhile(() => _testWaiting);
             
             print("turn completed, waiting");
