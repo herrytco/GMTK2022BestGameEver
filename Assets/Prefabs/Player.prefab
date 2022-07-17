@@ -415,6 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d710332c10e24f4f870b997634b4a9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawn: {fileID: 0}
 --- !u!1 &9057357230804764408
 GameObject:
   m_ObjectHideFlags: 0
@@ -609,8 +610,8 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -170150249
+  m_SortingOrder: 100
   m_TargetDisplay: 0
 --- !u!114 &9057357230891434613
 MonoBehaviour:

@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
     private bool moveAnimationDone;
     private bool waitForEvents;
     private float moveAnimTimer;
-    public int TargetTileID { private get; set; }
-    private List<GameObject> movementSelectionUI;
+    public int TargetTileID { private get; set; } = -1;
+    private List<GameObject> movementSelectionUI = new();
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
 
@@ -24,9 +24,8 @@ public class GameManager : MonoBehaviour
 
     public List<Team> Teams { get; set; } = new();
     public Team GetActiveTeam => Teams[activeTeamIndex];
-    public int RollResult { get; private set; }
+    public int RollResult { get; private set; } = 6;
     public bool AnimatingMovement { get => animatingMovement; set => animatingMovement = value; }
-    public int selectedTileId { get; set; }
 
     [SerializeField] private GameObject teamCardManagerPrefab;
     [SerializeField] private GameObject endTurnButton;
@@ -36,7 +35,9 @@ public class GameManager : MonoBehaviour
     {
         get => textManager;
     }
-    public bool MoveDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+
+    public bool MoveAnimDone { get => moveAnimationDone; set => moveAnimationDone = value; }
+    public bool WaitForEvents { get => waitForEvents; protected set => waitForEvents = value; }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
 
@@ -66,25 +67,37 @@ public class GameManager : MonoBehaviour
   // Update is called once per frame
     private void Update()
     {
-        if (animatingMovement && !waitForEvents)
+        if (RollResult > 0 && AnimatingMovement && !WaitForEvents)
         {
+            if (TargetTileID == -1 && SelectedCharacter.CheckForCrossroads())
+            {
+                EnableTileSelectionUI(SelectedCharacter.CurrentTile);
+                AnimatingMovement = false;
+                moveAnimTimer = 0;
+                return;
+            }
+
+            if (TargetTileID == -1)
+                TargetTileID++;
+
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
             SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
         }
 
-        if (moveAnimationDone && !waitForEvents)
+        if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
 
-            animatingMovement = false;
-            moveAnimationDone = false;
-            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
+            AnimatingMovement = false;
+            moveAnimTimer = 0;
+            MoveAnimDone = false;
             waitForEvents = true;
+            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
 
 
             RollResult--;
 
-            TargetTileID = 0;
+            TargetTileID = -1;
         }
     }
 
@@ -140,9 +153,10 @@ public class GameManager : MonoBehaviour
         {
             Vector2 dirVec = nextTile.transform.position - tile.transform.position;
             Vector2 dirUnitVec = dirVec / dirVec.magnitude;
-
-            movementSelectionUI.Add(Instantiate(MovementSelectionGO, dirUnitVec*dirVec.magnitude, Quaternion.identity));
-            MovementSelectionGO.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
+            GameObject tmp = Instantiate(MovementSelectionGO, dirUnitVec * dirVec.magnitude, Quaternion.identity);
+            tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
+            tmp.GetComponent<Canvas>().worldCamera = Camera.main;
+            movementSelectionUI.Add(tmp);
         }
     }
 
@@ -150,18 +164,25 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject button in movementSelectionUI)
         {
-            movementSelectionUI.Remove(button);
-            Destroy(button);
+            button.GetComponent<MovementSelectionButton>().Kill();
         }
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
     {
-        waitForEvents = false;
+        WaitForEvents = false;
+        AnimatingMovement = true;
     }
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
         waitForEvents = false;
+        AnimatingMovement = false;
+        moveAnimTimer = 0;
+        SelectedCharacter.MustLeave = true;
+    }
+    public void RegisterLeaveCallback(ITile tile)
+    {
+        SelectedCharacter.MustLeave = false;
     }
 }
