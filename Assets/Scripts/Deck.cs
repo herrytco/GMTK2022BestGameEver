@@ -5,6 +5,7 @@ using Cards;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(AudioSource))]
 public class Deck : MonoBehaviour
 {
     // actual cards in the deck 0 ... first card to draw. 
@@ -22,10 +23,15 @@ public class Deck : MonoBehaviour
     private readonly List<CardPlaceholder> _cardPlaceholders = new();
     private int CurrentlyDisplayedCards => Math.Min(deck.Count, maxDisplayedCardsInDeck);
     private TeamCardManager _teamCardManager;
+    
+    //AUDIO
+    public AudioClip drawSound;
+    AudioSource audioSource;
 
     private void Start()
     {
         _initializeCardBacks();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnMouseUp()
@@ -67,6 +73,7 @@ public class Deck : MonoBehaviour
 
         cardBank.AddCard(drawnCard);
         TeamCardManager.ReportDrawnCard(drawnCard);
+        if(audioSource!=null & drawSound != null) audioSource.PlayOneShot(drawSound);
     }
 
     private void RedrawCardBacks()
