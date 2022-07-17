@@ -14,14 +14,20 @@ namespace Cards
 
         public override void ExecuteEffect(GameManager manager)
         {
+            ICharacter selectedChar;
+                
             try
             {
-                ICharacter selectedChar = manager.GetSelectedCharacterForCardExecution(this);
+                selectedChar = manager.GetSelectedCharacterForCardExecution(this);
             }
             catch (NoCharacterSelectedException)
             {
                 Debug.Log("No char selected, ... aborting!");
+                return;
             }
+            
+            selectedChar.GiveShield();
+            manager.TextManager.SetMessage(selectedChar.name+" ("+manager.GetActiveTeam.Name+") received a shield!");
         }
     }
 }

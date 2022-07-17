@@ -131,6 +131,17 @@ public class GameManager : MonoBehaviour
     {
         SelectedCharacter.SelectionUI.SetActive(false);
         _inCharSelectionMode = false;
+        
+        Debug.Log("parked card .... "+_cardAwaitingToBeExecuted.GetCardData().name + (_cardAwaitingToBeExecuted != null));
+
+        // execute saved card (if present)
+        if (_cardAwaitingToBeExecuted != null)
+        {
+            Debug.Log("A card waits to be executed!");
+            AbstractCard card = _cardAwaitingToBeExecuted;
+            // _cardAwaitingToBeExecuted = null;
+            card.ExecuteEffect(this);
+        }
     }
 
     private void Update()
@@ -263,7 +274,6 @@ public class GameManager : MonoBehaviour
     {
         foreach (ITile nextTile in tile.NextTiles)
         {
-
             GameObject tmp = Instantiate(MovementSelectionGO, nextTile.transform);
             tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
             movementSelectionUI.Add(tmp);
