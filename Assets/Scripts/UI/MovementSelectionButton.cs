@@ -19,6 +19,11 @@ public class MovementSelectionButton : MonoBehaviour
         
     }
 
+    private void OnMouseUp()
+    {
+        OnPress();
+    }
+
     public void OnPress()
     {
         Debug.Log(TileId);

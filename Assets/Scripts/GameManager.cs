@@ -168,11 +168,9 @@ public class GameManager : MonoBehaviour
     {
         foreach (ITile nextTile in tile.NextTiles)
         {
-            Vector2 dirVec = nextTile.transform.position - tile.transform.position;
-            Vector2 dirUnitVec = dirVec / dirVec.magnitude;
-            GameObject tmp = Instantiate(MovementSelectionGO, dirUnitVec * dirVec.magnitude, Quaternion.identity);
+
+            GameObject tmp = Instantiate(MovementSelectionGO, nextTile.transform);
             tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
-            tmp.GetComponent<Canvas>().worldCamera = Camera.main;
             movementSelectionUI.Add(tmp);
         }
     }
