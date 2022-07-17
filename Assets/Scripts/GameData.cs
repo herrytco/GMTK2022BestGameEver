@@ -59,7 +59,10 @@ namespace DefaultNamespace
             "Franziskus",
             "Merinelda",
             "Xipho",
-            "Randel"
+            "Randel",
+            "Meridian",
+            "Vesslo",
+            "Vagabondo"
         };
 
         List<String> GenerateCharacters(int numCharacters)
@@ -130,6 +133,13 @@ namespace DefaultNamespace
             {
                 team.characterNames.RemoveAt(team.characterNames.Count - 1);
             }
+        }
+
+        public void SaveChangesCurrentTeam(int index, Team team)
+        {
+            
+            if(index > _teams.Count || team == null) return;
+            _teams[index] = team;
         }
     }
 }
