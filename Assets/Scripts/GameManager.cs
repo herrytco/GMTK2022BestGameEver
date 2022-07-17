@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cards;
 using Interfaces;
 using UI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -17,9 +19,12 @@ public class GameManager : MonoBehaviour
     public int ActiveTeamMana { get; set; }
     public int TargetTileID { private get; set; } = -1;
     private List<GameObject> movementSelectionUI = new();
-    
+
+    private static readonly System.Random Rng = new();
+
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
+    [SerializeField] private int piecesPerTeam = 1;
 
     public ICharacter SelectedCharacter { get; set; }
 
@@ -37,6 +42,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject endTurnButton;
     [SerializeField] private TextManager textManager;
     [SerializeField] private GameObject rollSkillDecisionCanvas;
+    [SerializeField] private CameraController cameraController;
+    [SerializeField] private PieceController piecePrefab;
+    [SerializeField] private GameObject mapHolder;
+    [SerializeField] private List<Color> teamColors;
+
+    private bool _inCharSelectionMode = false;
+    private AbstractCard _cardAwaitingToBeExecuted;
 
     public TextManager TextManager
     {
@@ -56,11 +68,21 @@ public class GameManager : MonoBehaviour
     }
 
     private readonly Dictionary<Team, TeamCardManager> _cardManagers = new();
+    private readonly Dictionary<Team, List<ICharacter>> _teamPieces = new();
+
+    private SimpleTile[] _mapTiles;
 
     private void Start()
     {
         Teams.Add(new Team("Red Hawks", 0));
         Teams.Add(new Team("Blue Giraffes", 1));
+
+        _mapTiles = mapHolder.GetComponentsInChildren<SimpleTile>();
+
+        List<SimpleTile> possibleSpawnTiles = _mapTiles.ToList();
+        possibleSpawnTiles = possibleSpawnTiles.OrderBy(a => Rng.Next()).ToList();
+
+        Debug.Log("Map has " + _mapTiles.Length + " tiles");
 
         // disable the end-turn button on startup
         endTurnButton.gameObject.SetActive(false);
@@ -68,6 +90,7 @@ public class GameManager : MonoBehaviour
         // create one card manager for each team. Deactivate them and active only the one of the active team.
         foreach (var team in Teams)
         {
+            // spawn a deck/card-system for each team
             TeamCardManager mng = Instantiate(teamCardManagerPrefab);
             mng.gameObject.SetActive(false);
             mng.Team = team;
@@ -75,10 +98,39 @@ public class GameManager : MonoBehaviour
             mng.DecisionCanvas = rollSkillDecisionCanvas;
 
             _cardManagers[team] = mng;
+
+            // spawn the players (on random tiles #fixme)
+            List<ICharacter> teamPieces = new();
+
+            Color teamColor = teamColors[Teams.IndexOf(team)];
+
+            for (int i = 0; i < piecesPerTeam; i++)
+            {
+                PieceController piece = Instantiate(piecePrefab, mapHolder.transform);
+
+                SimpleTile spawnTile = possibleSpawnTiles[0];
+                possibleSpawnTiles.RemoveAt(0);
+
+                piece.Spawn = spawnTile;
+                piece.SpawnPiece();
+
+                piece.name = "Piece " + (i + 1) + " (" + team.Name + ")";
+                piece.PieceTint = teamColor;
+
+                teamPieces.Add(piece);
+            }
+
+            _teamPieces[team] = teamPieces;
         }
 
         // start the first turn
         NextTurn();
+    }
+
+    public void SaveCharacterSelection()
+    {
+        SelectedCharacter.SelectionUI.SetActive(false);
+        _inCharSelectionMode = false;
     }
 
     private void Update()
@@ -115,6 +167,47 @@ public class GameManager : MonoBehaviour
 
             TargetTileID = -1;
         }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.RightArrow))
+        {
+            List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+            int indexCurrentlySelectedChar = pieces.IndexOf(SelectedCharacter);
+            int indexNext = indexCurrentlySelectedChar + 1;
+            if (indexNext == pieces.Count)
+                indexNext = 0;
+
+            ChangeCurrentlySelectedCharacter(indexNext);
+        }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.LeftArrow))
+        {
+            List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+            int indexCurrentlySelectedChar = pieces.IndexOf(SelectedCharacter);
+            int indexNext = indexCurrentlySelectedChar - 1;
+            if (indexNext == -1)
+                indexNext = pieces.Count - 1;
+
+            ChangeCurrentlySelectedCharacter(indexNext);
+        }
+
+        if (_inCharSelectionMode && Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.KeypadEnter))
+        {
+            SaveCharacterSelection();
+        }
+    }
+
+    private void ChangeCurrentlySelectedCharacter(int indexNew)
+    {
+        List<ICharacter> pieces = _teamPieces[GetActiveTeam];
+
+        SelectedCharacter.SelectionUI.SetActive(false);
+
+        SelectedCharacter = pieces[indexNew];
+        cameraController.JumpToPiece(SelectedCharacter);
+
+        SelectedCharacter.SelectionUI.SetActive(true);
     }
 
     public void NextTurn()
@@ -148,22 +241,24 @@ public class GameManager : MonoBehaviour
     public void PlayerUsedDice(int result)
     {
         RollResult = result;
-        
+
         // activate the end turn button
         endTurnButton.gameObject.SetActive(true);
-        
-        TextManager.SetMessage("Team "+GetActiveTeam.Name+" rolled a "+RollResult+"!");
+
+        TextManager.SetMessage("Team " + GetActiveTeam.Name + " rolled a " + RollResult + "!");
     }
 
     /// <summary>
     /// Called when the player used a skill
     /// </summary>
-    public void PlayerUsedSkills()
+    public void PlayerUsedSkills(AbstractCard card)
     {
+        TextManager.SetMessage(GetActiveTeam.Name + " used " + card.GetCardData().name + "!");
+
         // activate the end turn button
         endTurnButton.gameObject.SetActive(true);
     }
-    
+
     public void EnableTileSelectionUI(ITile tile)
     {
         foreach (ITile nextTile in tile.NextTiles)
@@ -183,6 +278,35 @@ public class GameManager : MonoBehaviour
         {
             button.GetComponent<MovementSelectionButton>().Kill();
         }
+    }
+
+    public ICharacter GetSelectedCharacterForCardExecution(AbstractCard card)
+    {
+        if (SelectedCharacter == null)
+        {
+            _cardAwaitingToBeExecuted = card;
+            EnableCharSelectionUI();
+            throw new NoCharacterSelectedException();
+        }
+
+        return SelectedCharacter;
+    }
+
+    private void EnableCharSelectionUI()
+    {
+        mapHolder.GetComponent<RightClickDraggable>().Enabled = false;
+
+        Team activeTeam = GetActiveTeam;
+
+        TextManager.SetMessage("Choose one of your pieces");
+        _inCharSelectionMode = true;
+
+        ICharacter firstPiece = _teamPieces[activeTeam][0];
+
+        cameraController.JumpToPiece(firstPiece);
+        firstPiece.SelectionUI.SetActive(true);
+
+        SelectedCharacter = firstPiece;
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
@@ -238,6 +362,5 @@ public class GameManager : MonoBehaviour
         team.ManaCapacity -= amount;
         if (team.ManaCapacity < 0)
             team.ManaCapacity = 0;
-
     }
 }
