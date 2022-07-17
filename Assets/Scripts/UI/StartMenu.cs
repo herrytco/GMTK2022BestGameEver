@@ -16,11 +16,15 @@ public class StartMenu : MonoBehaviour
     private int startTeamSize = 1;
     private int currentTeamSize;
     public TMP_Dropdown teamDropdown;
+    public TMP_Dropdown teamColorDropdown;
+    public Color[] possibleColors;
     private List<TMP_Dropdown.OptionData> currentTeamOptions = new List<TMP_Dropdown.OptionData>();
 
     private int numTeamsStart = 2;
     private int currentTeamSelected;
     public TextMeshProUGUI teamSizeText;
+
+    public Toggle AItoggle;
 
     public GameObject scrollableContainerPrefab;
     public GameObject containerParent;
@@ -52,7 +56,7 @@ public class StartMenu : MonoBehaviour
             currentTeamOptions.Add(t);
             teamDropdown.options = currentTeamOptions;
         }
-        
+
         DrawPlayerList(currentTeams[CheckCurrentTeamIndex()]);
 
         if (teamSizeText == null) return;
@@ -129,8 +133,24 @@ public class StartMenu : MonoBehaviour
 
     public void SaveAllChanges()
     {
-        //send data to game data
-        //iterate children in container and extract character names
-        //save into current team
+        List<Team> currentTeams = GameData.Instance._teams;
+        Team currentTeam = currentTeams[CheckCurrentTeamIndex()];
+        List<String> oldNames = currentTeam.characterNames;
+        List<String> newNames = new List<string>();
+
+        int i = 0;
+        foreach (Transform child in containerParent.transform)
+        {
+            DataContainer data = child.gameObject.GetComponent<DataContainer>();
+            var newName = (oldNames[i].Equals(data.characterName)) ? oldNames[i] : data.characterName;
+            newNames.Add(newName);
+            i++;
+        }
+
+        currentTeam.characterNames = newNames;
+        currentTeam.Color = Color.black; //from dropdown
+        currentTeam.isAi = false; //from toggle
+
+        GameData.Instance.SaveChangesCurrentTeam(CheckCurrentTeamIndex(), currentTeam);
     }
 }
