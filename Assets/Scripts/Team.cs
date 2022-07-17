@@ -13,6 +13,8 @@ public class Team
     public List<String> characterNames  = new List<string>();
     public bool isAi;
 
+    public int ManaCapacity;
+
     public string Name { get; set; }
 
     public int Id { get; set; }

@@ -199,4 +199,9 @@ public class GameManager : MonoBehaviour
     {
         SelectedCharacter.MustLeave = false;
     }
+
+    public void GiveActiveTeamMana()
+    {
+        GetActiveTeam.ManaCapacity++;
+    }
 }
