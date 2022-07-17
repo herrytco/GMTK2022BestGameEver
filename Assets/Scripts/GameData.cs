@@ -34,6 +34,10 @@ namespace DefaultNamespace
         private String[] randomCharacterNames = new[]
         {
             "Jack",
+            "Frank Steiner",
+            "Slapmaster",
+            "Eagle Eye",
+            "Zuruk",
             "Hans",
             "Martin",
             "Marion",

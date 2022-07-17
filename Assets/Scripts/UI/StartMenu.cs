@@ -130,5 +130,7 @@ public class StartMenu : MonoBehaviour
     public void SaveAllChanges()
     {
         //send data to game data
+        //iterate children in container and extract character names
+        //save into current team
     }
 }
