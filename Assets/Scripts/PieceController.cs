@@ -18,6 +18,8 @@ public class PieceController : ICharacter
         CurrentTile = spawn;
         transform.position = CurrentTile.transform.position;
 
+        PieceAnimator = GetComponent<Animator>();
+
         shieldGO = transform.Find("Shield").gameObject;
         shieldGO.SetActive(false);
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -103,6 +105,7 @@ public class PieceController : ICharacter
 
     public override void AnimateMovement(ITile tile, float t)
     {
+        PieceAnimator.SetBool("moving", true);
         //Start Animation
         //Move Sprite
         if (t >= 1)

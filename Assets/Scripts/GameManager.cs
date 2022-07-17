@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     private bool moveAnimationDone;
     private bool waitForEvents;
     private float moveAnimTimer;
+
+    public int ActiveTeamMana { get; set; }
     public int TargetTileID { private get; set; } = -1;
     private List<GameObject> movementSelectionUI = new();
     
@@ -145,7 +147,7 @@ public class GameManager : MonoBehaviour
         if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
-
+            SelectedCharacter.PieceAnimator.SetBool("moving", false);
             AnimatingMovement = false;
             moveAnimTimer = 0;
             MoveAnimDone = false;
@@ -180,6 +182,8 @@ public class GameManager : MonoBehaviour
 
         _cardManagers[GetActiveTeam].gameObject.SetActive(true);
         _cardManagers[GetActiveTeam].IsCardDrawEnabled = true;
+
+        ActiveTeamMana = GetActiveTeam.ManaCapacity;
     }
 
     /// <summary>
@@ -267,5 +271,37 @@ public class GameManager : MonoBehaviour
     public void GiveActiveTeamMana()
     {
         GetActiveTeam.ManaCapacity++;
+        ActiveTeamMana++;
+    }
+
+    /// <summary>
+    /// Uses mana of the active team.
+    /// </summary>
+    /// <param name="amount">The amount of mana.</param>
+    /// <returns>true if mana was consumed. false if amount exceeded the available mana</returns>
+    public bool UseMana(int amount)
+    {
+        int tmpMana = ActiveTeamMana - amount;
+
+        if (tmpMana < 0)
+        {
+            return false;
+        }
+
+        ActiveTeamMana = tmpMana;
+        return true;
+    }
+
+    /// <summary>
+    /// PERMANENTLY REMOVES MANA FROM ONE TEAM
+    /// </summary>
+    /// <param name="team">the team that will be fucked</param>
+    /// <param name="amount">the size of the fuckery</param>
+    public void RemoveManaFromTeam(Team team, int amount)
+    {
+        team.ManaCapacity -= amount;
+        if (team.ManaCapacity < 0)
+            team.ManaCapacity = 0;
+
     }
 }
