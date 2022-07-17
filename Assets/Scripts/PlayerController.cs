@@ -95,6 +95,6 @@ public class PlayerController : ICharacter
 
         
 
-        Destroy(this);
+        Destroy(gameObject);
     }
 }

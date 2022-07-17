@@ -15,6 +15,6 @@ public class SimpleCharacter : ICharacter
 
     public override void Kill()
     {
-        throw new System.NotImplementedException();
+        Destroy(gameObject);
     }
 }
