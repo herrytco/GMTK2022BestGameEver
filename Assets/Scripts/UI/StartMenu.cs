@@ -158,4 +158,14 @@ public class StartMenu : MonoBehaviour
 
         GameData.Instance.SaveChangesCurrentTeam(CheckCurrentTeamIndex(), currentTeam);
     }
+
+    public void LaunchBotgame()
+    {
+        Debug.Log("Launching Botgame");
+    }
+
+    public void LaunchVersus()
+    {
+        Debug.Log("Launching Versus");
+    }
 }
