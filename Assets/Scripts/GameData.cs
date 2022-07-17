@@ -95,6 +95,7 @@ namespace DefaultNamespace
         /// </summary>
         public void RemoveTeam(int currentTeam)
         {
+            if (_teams == null || _teams.Count<=0) return;
             _teams.RemoveAt(currentTeam);
         }
 

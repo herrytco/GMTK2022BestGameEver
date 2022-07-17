@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -30,6 +31,12 @@ public class StartMenu : MonoBehaviour
         if (teamSizeText == null) return;
         currentTeamSize = startTeamSize;
         teamSizeText.SetText("Players per team: " + currentTeamSize);
+
+        for (int i = 0; i < numTeamsStart; i++)
+        {
+            GameData.Instance.AddTeam();
+        }
+
         UpdateUI();
     }
 
@@ -45,11 +52,19 @@ public class StartMenu : MonoBehaviour
             currentTeamOptions.Add(t);
             teamDropdown.options = currentTeamOptions;
         }
-
-        DrawPlayerList(currentTeams[teamDropdown.value]);
+        
+        DrawPlayerList(currentTeams[CheckCurrentTeamIndex()]);
 
         if (teamSizeText == null) return;
         teamSizeText.SetText("Players per team: " + currentTeams[0].characterNames.Count);
+    }
+
+    int CheckCurrentTeamIndex()
+    {
+        List<Team> currentTeams = GameData.Instance._teams;
+        currentTeamSelected =
+            (teamDropdown.value > currentTeams.Count - 1) ? currentTeams.Count - 1 : teamDropdown.value;
+        return currentTeamSelected;
     }
 
     /// <summary>
@@ -59,6 +74,12 @@ public class StartMenu : MonoBehaviour
     {
         settingsScreenActive = !settingsScreenActive;
         if (settingsScreen != null) settingsScreen.SetActive(settingsScreenActive);
+        UpdateUI();
+    }
+
+    public void OnTeamSelectChange()
+    {
+        UpdateUI();
     }
 
     /// <summary>
@@ -66,19 +87,19 @@ public class StartMenu : MonoBehaviour
     /// </summary>
     void DrawPlayerList(Team selectedTeam)
     {
-        foreach (Transform child in containerParent.transform) {
+        foreach (Transform child in containerParent.transform)
+        {
             Destroy(child.gameObject);
         }
-        
+
         if (scrollableContainerPrefab == null || containerParent == null) return;
         List<Team> currentTeams = GameData.Instance._teams;
-        foreach (var name in currentTeams[teamDropdown.value].characterNames)
+        foreach (var name in currentTeams[CheckCurrentTeamIndex()].characterNames)
         {
             GameObject container = Instantiate(scrollableContainerPrefab, containerParent.transform);
-            //get container script
-            //edit name
+            DataContainer data = container.GetComponent<DataContainer>();
+            data.ChangeName(name);
         }
-
     }
 
     public void AddCharacters()
@@ -102,7 +123,7 @@ public class StartMenu : MonoBehaviour
     public void RemoveTeam()
     {
         if (teamDropdown == null) return;
-        GameData.Instance.RemoveTeam(teamDropdown.value);
+        GameData.Instance.RemoveTeam(CheckCurrentTeamIndex());
         UpdateUI();
     }
 
