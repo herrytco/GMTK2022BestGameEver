@@ -41,6 +41,8 @@ public class StartMenu : MonoBehaviour
             GameData.Instance.AddTeam();
         }
 
+        if (AItoggle != null) AItoggle.isOn = false;
+
         UpdateUI();
     }
 
@@ -84,6 +86,8 @@ public class StartMenu : MonoBehaviour
     public void OnTeamSelectChange()
     {
         UpdateUI();
+        if (AItoggle == null) return;
+        AItoggle.isOn = false;
     }
 
     /// <summary>
@@ -134,6 +138,7 @@ public class StartMenu : MonoBehaviour
     public void SaveAllChanges()
     {
         List<Team> currentTeams = GameData.Instance._teams;
+        if (currentTeams == null || currentTeams.Count <= 0) return;
         Team currentTeam = currentTeams[CheckCurrentTeamIndex()];
         List<String> oldNames = currentTeam.characterNames;
         List<String> newNames = new List<string>();
@@ -149,7 +154,7 @@ public class StartMenu : MonoBehaviour
 
         currentTeam.characterNames = newNames;
         currentTeam.Color = Color.black; //from dropdown
-        currentTeam.isAi = false; //from toggle
+        currentTeam.isAi = AItoggle.isOn; //from toggle
 
         GameData.Instance.SaveChangesCurrentTeam(CheckCurrentTeamIndex(), currentTeam);
     }
