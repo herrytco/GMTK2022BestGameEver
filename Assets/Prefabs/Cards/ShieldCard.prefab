@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0fd37cccf5bcdc441bc5b0c88b5b1d85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  decisionCanvasPrefab: {fileID: 3804685111587108732, guid: 3bbf886d5414269479ba945667d0705a, type: 3}
   data: {fileID: 11400000, guid: d8ec70d6c7d80b4438b641b433b57f46, type: 2}
 --- !u!61 &3214636019039686606
 BoxCollider2D:
@@ -251,7 +252,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -700750515
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: db32a5f17f58b284d952f2c3fec97df7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -875,7 +876,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -700750515
-  m_SortingLayer: 1
+  m_SortingLayer: 4
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: a692d628a4405fd4fa5c54cda2443417, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

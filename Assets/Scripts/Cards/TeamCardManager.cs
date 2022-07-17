@@ -14,31 +14,36 @@ namespace Cards
 
         [SerializeField] private GameObject deckPrefab;
         [SerializeField] private Vector3 deckPosition;
-        
+
         [SerializeField] private GameObject cardBankPrefab;
 
         [SerializeField] private int initialCardsOnHand = 6;
 
+        private static readonly System.Random Rng = new();
+
         private Deck _deck;
         private CardBank _bank;
         private bool _isCardDrawEnabled = true;
+        private bool _isCardPlayable = false;
         private Team _team;
 
         private readonly List<Action<AbstractCard>> _cardDrawCallbacks = new();
 
         private GameManager _gameManager;
-
         private GameObject _drawIndicator;
+        private GameObject _decisionCanvas;
 
-        public GameManager GameManager
+        public bool IsCardPlayable
         {
-            set => _gameManager = value;
-        }
-
-        public Team Team
-        {
-            get => _team;
-            set => _team = value;
+            get => _isCardPlayable;
+            set
+            {
+                _isCardPlayable = value;
+                foreach (var handCard in _bank.HandCards)
+                {
+                    handCard.Usable = value;
+                }
+            }
         }
 
         public bool IsCardDrawEnabled
@@ -46,8 +51,13 @@ namespace Cards
             get => _isCardDrawEnabled;
             set
             {
-                _isCardDrawEnabled = value; 
+                _isCardDrawEnabled = value;
                 _drawIndicator.SetActive(value);
+
+                if (value)
+                {
+                    StartCoroutine("PrintDrawMessage");
+                }
             }
         }
 
@@ -55,13 +65,13 @@ namespace Cards
         {
             _deck = Instantiate(deckPrefab, transform).GetComponentInChildren<Deck>();
             _bank = Instantiate(cardBankPrefab, transform).GetComponentInChildren<CardBank>();
+            _bank.TeamCardManager = this;
 
             _deck.transform.position = deckPosition;
             _deck.TeamCardManager = this;
             _deck.CardBank = _bank;
 
             _drawIndicator = _deck.DrawIndicator.gameObject;
-            Debug.Log(_drawIndicator.name);
 
             foreach (var card in defaultCards)
             {
@@ -79,29 +89,79 @@ namespace Cards
                     Debug.LogError("More Initial Cards than there are default cards!");
                     break;
                 }
+
+                IsCardPlayable = false;
             }
-            
+
             _deck.Shuffle();
         }
 
-        private void Start()
+        private IEnumerator PrintDrawMessage()
         {
-            
+            yield return new WaitForSeconds(1f);
+
+            _gameManager.TextManager.SetMessage("Draw a Card!");
         }
 
         public void AddDrawCallBack(Action<AbstractCard> callback)
         {
             _cardDrawCallbacks.Add(callback);
         }
-        
+
         public void ReportDrawnCard(AbstractCard card)
         {
             IsCardDrawEnabled = false;
-            
+            IsCardPlayable = true;
+
             foreach (var cardDrawCallback in _cardDrawCallbacks)
             {
                 cardDrawCallback(card);
             }
+        }
+
+        public void ReportSkillUse(AbstractCard card)
+        {
+            Destroy(card.gameObject);
+            _gameManager.PlayerUsedSkills();
+        }
+
+        public void ReportDiceRoll(AbstractCard card)
+        {
+            Destroy(card.gameObject);
+
+            string diceString = card.GetCardData().DiceText;
+            string[] parts = diceString.Split("d");
+
+            int nRolls = int.Parse(parts[0]);
+            int nSides = int.Parse(parts[1]);
+
+            int result = 0;
+            for (int i = 0; i < nRolls; i++)
+            {
+                result += Rng.Next(nSides) + 1;
+            }
+
+            _gameManager.PlayerUsedDice(result);
+        }
+
+        public GameObject DecisionCanvas
+        {
+            set
+            {
+                _decisionCanvas = value;
+                _bank.DecisionCanvas = value;
+            }
+        }
+
+        public GameManager GameManager
+        {
+            set => _gameManager = value;
+        }
+
+        public Team Team
+        {
+            get => _team;
+            set => _team = value;
         }
     }
 }

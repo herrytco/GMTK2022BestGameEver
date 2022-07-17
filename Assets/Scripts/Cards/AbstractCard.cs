@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Cards
 {
     public abstract class AbstractCard : MonoBehaviour
     {
+        [SerializeField] private GameObject decisionCanvasPrefab;
+        
         private TextMeshProUGUI _costText;
         private TextMeshProUGUI _descriptionText;
         private TextMeshProUGUI _diceText;
@@ -21,6 +24,18 @@ namespace Cards
         private bool _scaleDownCoroutineIsRunning = false;
         private bool _scaledUp = false;
         private bool _shouldResize = true;
+        private bool _usable = false;
+        private bool _isCurrentlyDragging = false;
+
+        private Vector3 _positionInCardBank;
+
+        public CardBank _bank;
+
+        public bool Usable
+        {
+            get => _usable;
+            set => _usable = value;
+        }
 
         public bool ShouldResize
         {
@@ -102,6 +117,53 @@ namespace Cards
         {
             _flavorText.text = text;
         }
+
+        private void OnMouseDrag()
+        {
+            if (!Usable)
+            {
+                return;
+            }
+
+            if (!_isCurrentlyDragging)
+            {
+                _isCurrentlyDragging = true;
+                transform.localScale = new Vector3(.5f, .5f, 1);
+
+                _bank.DecisionCanvas.SetActive(true);
+            }
+            
+            Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+
+            transform.position = pos;
+        }
+
+        private void OnMouseUp()
+        {
+            if (!_isCurrentlyDragging)
+                return;
+            
+            transform.position = _positionInCardBank;
+            transform.localScale = new Vector3(.5f, .5f, 1);
+            _isCurrentlyDragging = false;
+
+            _bank.DecisionCanvas.SetActive(false);
+
+            float mouseXPos = Camera.main.ScreenToWorldPoint(Input.mousePosition).x;
+
+            float p = (mouseXPos / ScreenWidth) + .5f;
+
+            if (p < .3)
+            {
+                _bank.UseCardDice(this);
+            }
+            else if (p > .7)
+            {
+                _bank.UseCardSkill(this);
+            }
+        }
+
 
         private void OnMouseOver()
         {
@@ -185,5 +247,23 @@ namespace Cards
         public abstract void ExecuteEffect();
 
         public abstract CardData GetCardData();
+        
+        public Vector3 PositionInCardBank
+        {
+            set
+            {
+                _positionInCardBank = value;
+                transform.position = value;
+            }
+        }
+
+        public CardBank Bank
+        {
+            set => _bank = value;
+        }
+        
+        private float ScreenHeight => Camera.main.orthographicSize * 2;
+
+        private float ScreenWidth => ScreenHeight * (Screen.width / (float)Screen.height);
     }
 }
