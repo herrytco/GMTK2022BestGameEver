@@ -60,6 +60,7 @@ public class PieceController : ICharacter
         if (moveToTileId == -1)
             moveToTileId++;
 
+        Debug.Log("a!");
 
         CurrentTile = CurrentTile.NextTiles[moveToTileId];
 
@@ -67,12 +68,14 @@ public class PieceController : ICharacter
         if (onlyVisiting)
         {
 
-            CurrentTile.Visit(this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
+            Debug.Log("SHEESH");
+            CurrentTile.Visit(gameManager, this, (tile, character) => gameManager.RegisterVisitCallback(tile, character));
         }
         else
         {
 
-            CurrentTile.Occupy(this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
+            Debug.Log("oi");
+            CurrentTile.Occupy(gameManager, this, (tile, character) => gameManager.RegisterOccupyCallback(tile, character));
         }
         return;
     }
