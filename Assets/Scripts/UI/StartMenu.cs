@@ -66,11 +66,19 @@ public class StartMenu : MonoBehaviour
     /// </summary>
     void DrawPlayerList(Team selectedTeam)
     {
-        return;
+        foreach (Transform child in containerParent.transform) {
+            Destroy(child.gameObject);
+        }
+        
         if (scrollableContainerPrefab == null || containerParent == null) return;
-        GameObject container = Instantiate(scrollableContainerPrefab, containerParent.transform);
-        Button button = container.GetComponentInChildren<Button>();
-        InputField input = container.GetComponentInChildren<InputField>();
+        List<Team> currentTeams = GameData.Instance._teams;
+        foreach (var name in currentTeams[teamDropdown.value].characterNames)
+        {
+            GameObject container = Instantiate(scrollableContainerPrefab, containerParent.transform);
+            //get container script
+            //edit name
+        }
+
     }
 
     public void AddCharacters()
