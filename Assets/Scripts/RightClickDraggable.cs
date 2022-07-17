@@ -11,6 +11,11 @@ public class RightClickDraggable : MonoBehaviour
     private Vector3 _mouseOrig;
     private Vector3 _objectOrig;
 
+    private float _scale;
+    public float scrollMultiplier = .1f;
+    public float minScale = .5f;
+    public float maxScale = 2f;
+
 
     private void Start()
     {
@@ -40,5 +45,8 @@ public class RightClickDraggable : MonoBehaviour
         {
             _currentlyDragging = false;
         }
+
+        _scale = Mathf.Clamp(_scale + Input.mouseScrollDelta.y * scrollMultiplier, minScale, maxScale);
+        transform.localScale = new Vector3(_scale, _scale, _scale);
     }
 }
