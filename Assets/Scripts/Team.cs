@@ -11,6 +11,7 @@ public class Team
     }
 
     public List<String> characterNames  = new List<string>();
+    public bool isAi;
 
     public string Name { get; set; }
 
