@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Cards;
+using DefaultNamespace;
 using Interfaces;
 using UI;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -57,8 +59,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Teams.Add(new Team("Red Hawks", 0));
-        Teams.Add(new Team("Blue Giraffes", 1));
+        Teams = GameData.Instance._teams;
 
         // disable the end-turn button on startup
         endTurnButton.gameObject.SetActive(false);
@@ -198,5 +199,10 @@ public class GameManager : MonoBehaviour
     public void RegisterLeaveCallback(ITile tile)
     {
         SelectedCharacter.MustLeave = false;
+    }
+
+    public void GiveActiveTeamMana()
+    {
+        GetActiveTeam.ManaCapacity++;
     }
 }

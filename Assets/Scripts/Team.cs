@@ -10,6 +10,8 @@ public class Team
         Id = id;
     }
 
+    public int ManaCapacity { get; set; }
+
     public List<String> characterNames  = new List<string>();
     public bool isAi;
 
