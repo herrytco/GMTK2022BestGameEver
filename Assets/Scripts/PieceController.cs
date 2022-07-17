@@ -1,7 +1,7 @@
 using Interfaces;
 using UnityEngine;
 
-public class CharacterController : ICharacter
+public class PieceController : ICharacter
 {
     private GameManager gameManager;
     [SerializeField] private ITile spawn;
@@ -17,7 +17,6 @@ public class CharacterController : ICharacter
         //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
         ConfirmationCanvas.SetActive(false);
-        Team = gameManager.Teams[0];
         gameManager.SelectedCharacter = this;
         CurrentTile.Occupy(this, (ITile tile, ICharacter character) => gameManager.RegisterOccupyCallback(tile, character));
     }
@@ -48,11 +47,16 @@ public class CharacterController : ICharacter
     /// <returns>The tile that is currently occupied or visited</returns>
     public override void MoveOneStep(bool onlyVisiting, int moveToTileId = -1)
     {
-
-        Debug.Log("a!");
+        if (MustLeave)
+        {
+            MustLeave = false;
+           CurrentTile.Leave(this, CurrentTile, (ITile tile, ICharacter character) => gameManager.RegisterLeaveCallback(tile));
+        }
 
         if (moveToTileId == -1)
             moveToTileId++;
+
+        Debug.Log("a!");
 
         CurrentTile = CurrentTile.NextTiles[moveToTileId];
 
@@ -73,14 +77,13 @@ public class CharacterController : ICharacter
     }
 
     /// <summary>
-    /// Checks if there is more than one next tile and enables Selection UI
+    /// Checks if there is more than one next tile
     /// </summary>
     /// <returns>true if there is more than one next tile</returns>
     public override bool CheckForCrossroads()
     {
-        if (CurrentTile.NextTiles.Count > 1) //does not even work yet
+        if (CurrentTile.NextTiles.Count > 1)
         {
-            gameManager.EnableTileSelectionUI(CurrentTile);
             return true;
         }
 

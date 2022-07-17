@@ -22,8 +22,14 @@ public class MovementSelectionButton : MonoBehaviour
     public void OnPress()
     {
         Debug.Log(TileId);
-        gameManager.AnimatingMovement = true;
         gameManager.TargetTileID = TileId;
+        gameManager.AnimatingMovement = true;
         gameManager.DisableTileSelectionUi();
+    }
+
+    public void Kill()
+    {
+        gameObject.SetActive(false);
+        DestroyImmediate(gameObject);
     }
 }

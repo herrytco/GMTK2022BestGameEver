@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     private bool moveAnimationDone;
     private bool waitForEvents;
     private float moveAnimTimer;
-    public int TargetTileID { private get; set; }
+    public int TargetTileID { private get; set; } = -1;
     private List<GameObject> movementSelectionUI = new();
     [SerializeField] private GameObject MovementSelectionGO;
     [SerializeField] private float moveAnimSpeed;
@@ -67,13 +67,19 @@ public class GameManager : MonoBehaviour
   // Update is called once per frame
     private void Update()
     {
-        if (RollResult > 0 && animatingMovement && !WaitForEvents)
+        if (RollResult > 0 && AnimatingMovement && !WaitForEvents)
         {
-            if (SelectedCharacter.CheckForCrossroads())
+            if (TargetTileID == -1 && SelectedCharacter.CheckForCrossroads())
             {
-                animatingMovement = false;
+                EnableTileSelectionUI(SelectedCharacter.CurrentTile);
+                AnimatingMovement = false;
+                moveAnimTimer = 0;
                 return;
             }
+
+            if (TargetTileID == -1)
+                TargetTileID++;
+
             moveAnimTimer += Time.deltaTime * moveAnimSpeed;
             SelectedCharacter.AnimateMovement(SelectedCharacter.CurrentTile.NextTiles[TargetTileID], moveAnimTimer);
         }
@@ -82,15 +88,16 @@ public class GameManager : MonoBehaviour
         {
             //Disable movement anim
 
-            animatingMovement = false;
-            moveAnimationDone = false;
-            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
+            AnimatingMovement = false;
+            moveAnimTimer = 0;
+            MoveAnimDone = false;
             waitForEvents = true;
+            SelectedCharacter.MoveOneStep(RollResult >= 1 ? true : false, TargetTileID);
 
 
             RollResult--;
 
-            TargetTileID = 0;
+            TargetTileID = -1;
         }
     }
 
@@ -147,9 +154,9 @@ public class GameManager : MonoBehaviour
             Vector2 dirVec = nextTile.transform.position - tile.transform.position;
             Vector2 dirUnitVec = dirVec / dirVec.magnitude;
             GameObject tmp = Instantiate(MovementSelectionGO, dirUnitVec * dirVec.magnitude, Quaternion.identity);
-
-            movementSelectionUI.Add(tmp);
             tmp.GetComponent<MovementSelectionButton>().TileId = tile.NextTiles.IndexOf(nextTile);
+            tmp.GetComponent<Canvas>().worldCamera = Camera.main;
+            movementSelectionUI.Add(tmp);
         }
     }
 
@@ -157,22 +164,22 @@ public class GameManager : MonoBehaviour
     {
         foreach (GameObject button in movementSelectionUI)
         {
-            Destroy(button);
+            button.GetComponent<MovementSelectionButton>().Kill();
         }
-
-        movementSelectionUI = new();
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
     {
-        Debug.Log("e");
         WaitForEvents = false;
-        animatingMovement = true;
+        AnimatingMovement = true;
     }
 
     public void RegisterOccupyCallback(ITile tile, ICharacter piece)
     {
         waitForEvents = false;
+        AnimatingMovement = false;
+        moveAnimTimer = 0;
+        SelectedCharacter.MustLeave = true;
     }
     public void RegisterLeaveCallback(ITile tile)
     {
