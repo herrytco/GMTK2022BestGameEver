@@ -8,8 +8,13 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(AudioSource))]
 public class StartMenu : MonoBehaviour
 {
+    public AudioClip saveAudioClip;
+    public AudioClip UISelectAudioClip;
+    AudioSource audioSource;
+    
     public GameObject settingsScreen; //The pop-up menu with all the settings
     private bool settingsScreenActive = false;
 
@@ -26,7 +31,7 @@ public class StartMenu : MonoBehaviour
 
     public GameObject scrollableContainerPrefab;
     public GameObject containerParent;
-    
+
     public TMP_Dropdown teamColorDropdown;
     public Color[] possibleColors;
 
@@ -43,7 +48,7 @@ public class StartMenu : MonoBehaviour
         }
 
         if (AItoggle != null) AItoggle.isOn = false;
-
+        audioSource = GetComponent<AudioSource>();
         UpdateUI();
     }
 
@@ -66,6 +71,11 @@ public class StartMenu : MonoBehaviour
         teamSizeText.SetText("Players per team: " + currentTeams[0].characterNames.Count);
     }
 
+    public void PlaySelectSound()
+    {
+        if (UISelectAudioClip != null && audioSource != null) audioSource.PlayOneShot(UISelectAudioClip);
+    }
+
     int CheckCurrentTeamIndex()
     {
         List<Team> currentTeams = GameData.Instance._teams;
@@ -79,6 +89,7 @@ public class StartMenu : MonoBehaviour
     /// </summary>
     public void ToggleCustomScreen()
     {
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         settingsScreenActive = !settingsScreenActive;
         if (settingsScreen != null) settingsScreen.SetActive(settingsScreenActive);
         UpdateUI();
@@ -87,6 +98,7 @@ public class StartMenu : MonoBehaviour
     public void OnTeamSelectChange()
     {
         UpdateUI();
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         if (AItoggle == null) return;
         AItoggle.isOn = false;
     }
@@ -114,18 +126,21 @@ public class StartMenu : MonoBehaviour
     public void AddCharacters()
     {
         GameData.Instance.AddPlayersPerTeam();
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         UpdateUI();
     }
 
     public void AddTeam()
     {
         GameData.Instance.AddTeam();
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         UpdateUI();
     }
 
     public void RemoveCharacters()
     {
         GameData.Instance.RemovePlayersPerTeam();
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         UpdateUI();
     }
 
@@ -133,6 +148,7 @@ public class StartMenu : MonoBehaviour
     {
         if (teamDropdown == null) return;
         GameData.Instance.RemoveTeam(CheckCurrentTeamIndex());
+        if (UISelectAudioClip != null) audioSource.PlayOneShot(UISelectAudioClip);
         UpdateUI();
     }
 
@@ -157,6 +173,7 @@ public class StartMenu : MonoBehaviour
         currentTeam.Color = Color.black; //from dropdown
         currentTeam.isAi = AItoggle.isOn; //from toggle
 
+        if (saveAudioClip != null) audioSource.PlayOneShot(saveAudioClip);
         GameData.Instance.SaveChangesCurrentTeam(CheckCurrentTeamIndex(), currentTeam);
     }
 }

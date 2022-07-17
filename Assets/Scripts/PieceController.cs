@@ -1,17 +1,20 @@
 using Interfaces;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class PieceController : ICharacter
 {
     private GameManager gameManager;
     GameObject shieldGO;
     [SerializeField] private ITile spawn;
-
-
+    public AudioClip shieldSound;
+    public AudioClip shieldSoundBreak;
+    private AudioSource audioSource;
 
     // Start is called before the first frame update
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         CurrentTile = spawn;
         transform.position = CurrentTile.transform.position;
 
@@ -121,10 +124,12 @@ public class PieceController : ICharacter
         }
     }
 
+    
     public override void TryKill()
     {
         if (Shield)
         {
+            if (shieldSound != null) audioSource.PlayOneShot(shieldSoundBreak);
             shieldGO.SetActive(false);
             Shield = false;
             return;
@@ -139,6 +144,7 @@ public class PieceController : ICharacter
 
     public override void GiveShield()
     {
+        if (shieldSound != null) audioSource.PlayOneShot(shieldSound);
         shieldGO.SetActive(true);
         Shield = true;
     }
