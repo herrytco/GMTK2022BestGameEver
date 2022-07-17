@@ -3595,7 +3595,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 349385613}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 412724221}
+        m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
+        m_MethodName: AddTeam
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &349385613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4260,9 +4272,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5873ae2f495b5074c8afdcf753777d62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  customiseScreenHolder: {fileID: 255154110}
+  settingsScreen: {fileID: 255154110}
+  teamDropdown: {fileID: 47851469}
   teamSizeText: {fileID: 1080074007}
   scrollableContainerPrefab: {fileID: 5250416084464173452, guid: 7b34ba0c946aef34f9ba49fd80aeee2c, type: 3}
+  containerParent: {fileID: 2126931920}
 --- !u!4 &412724222
 Transform:
   m_ObjectHideFlags: 0
@@ -4932,7 +4946,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 412724221}
         m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
-        m_MethodName: AddPlayersPerTeam
+        m_MethodName: AddCharacters
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5139,7 +5153,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 412724221}
         m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
-        m_MethodName: RemovePlayersPerTeam
+        m_MethodName: RemoveCharacters
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8376,7 +8390,7 @@ GameObject:
   - component: {fileID: 913488577}
   - component: {fileID: 913488576}
   m_Layer: 5
-  m_Name: Remove
+  m_Name: Remove Team
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8446,7 +8460,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 913488577}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 412724221}
+        m_TargetAssemblyTypeName: StartMenu, Assembly-CSharp
+        m_MethodName: RemoveTeam
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &913488577
 MonoBehaviour:
   m_ObjectHideFlags: 0

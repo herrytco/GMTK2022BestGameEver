@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Team
@@ -7,6 +9,8 @@ public class Team
         Name = name;
         Id = id;
     }
+
+    public List<String> characterNames  = new List<string>();
 
     public string Name { get; set; }
 

@@ -1,25 +1,53 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class StartMenu : MonoBehaviour
 {
-    public GameObject customiseScreenHolder;
-    private bool customiseScreenState = false;
+    public GameObject settingsScreen; //The pop-up menu with all the settings
+    private bool settingsScreenActive = false;
+
     private int startTeamSize = 1;
     private int currentTeamSize;
+    public TMP_Dropdown teamDropdown;
+    private List<TMP_Dropdown.OptionData> currentTeamOptions = new List<TMP_Dropdown.OptionData>();
+
+    private int numTeamsStart = 2;
+    private int currentTeamSelected;
     public TextMeshProUGUI teamSizeText;
+
     public GameObject scrollableContainerPrefab;
-    
+    public GameObject containerParent;
+
     private void Start()
     {
-        if (customiseScreenHolder != null) customiseScreenHolder.SetActive(customiseScreenState);
+        if (settingsScreen != null) settingsScreen.SetActive(settingsScreenActive);
         if (teamSizeText == null) return;
         currentTeamSize = startTeamSize;
         teamSizeText.SetText("Players per team: " + currentTeamSize);
+        UpdateUI();
+    }
+
+    void UpdateUI()
+    {
+        List<Team> currentTeams = GameData.Instance._teams;
+
+        foreach (var team in currentTeams)
+        {
+            TMP_Dropdown.OptionData t = new TMP_Dropdown.OptionData(team.Name);
+            currentTeamOptions.Add(t);
+            teamDropdown.options = currentTeamOptions;
+        }
+
+        DrawPlayerList(currentTeams[teamDropdown.value]);
+
+        if (teamSizeText == null) return;
+        teamSizeText.SetText("Players per team: " + currentTeams.Count);
     }
 
     /// <summary>
@@ -27,58 +55,49 @@ public class StartMenu : MonoBehaviour
     /// </summary>
     public void ToggleCustomScreen()
     {
-        customiseScreenState = !customiseScreenState;
-        if (customiseScreenHolder != null) customiseScreenHolder.SetActive(customiseScreenState);
-    }
-
-    
-    public void SendInputString(String manualInput)
-    {
-        //names of characters,should be connected to scrollable list containers
-    }
-    
-    /// <summary>
-    /// Adds one additional default player character to all team
-    /// </summary>
-    public void AddPlayersPerTeam()
-    {
-        currentTeamSize++;
-        if (teamSizeText == null) return;
-        teamSizeText.SetText("Players per team: " + currentTeamSize);
-        
-        if(scrollableContainerPrefab == null) return;
-        GameObject container = Instantiate(scrollableContainerPrefab, transform);
+        settingsScreenActive = !settingsScreenActive;
+        if (settingsScreen != null) settingsScreen.SetActive(settingsScreenActive);
     }
 
     /// <summary>
-    /// Subtracts last player character from current team
+    /// Populates scroll menu
     /// </summary>
-    public void RemovePlayersPerTeam()
+    void DrawPlayerList(Team selectedTeam)
     {
-        if (currentTeamSize > 1) currentTeamSize--;
-        if (teamSizeText == null) return;
-        teamSizeText.SetText("Players per team: " + currentTeamSize);
+        return;
+        if (scrollableContainerPrefab == null || containerParent == null) return;
+        GameObject container = Instantiate(scrollableContainerPrefab, containerParent.transform);
+        Button button = container.GetComponentInChildren<Button>();
+        InputField input = container.GetComponentInChildren<InputField>();
+    }
+
+    public void AddCharacters()
+    {
+        GameData.Instance.AddPlayersPerTeam();
+        UpdateUI();
+    }
+
+    public void AddTeam()
+    {
+        GameData.Instance.AddTeam();
+        UpdateUI();
+    }
+
+    public void RemoveCharacters()
+    {
+        GameData.Instance.RemovePlayersPerTeam();
+        UpdateUI();
+    }
+
+    public void RemoveTeam()
+    {
+        if (teamDropdown == null) return;
+        GameData.Instance.RemoveTeam(teamDropdown.value);
+        UpdateUI();
     }
 
     public void SaveAllChanges()
     {
-        print(currentTeamSize);
-    }
-
-    /// <summary>
-    /// Sets Player Characters per Team
-    /// </summary>
-    public void SetPlayerPerTeam(int playerPerTeam, GameObject dropdownMenu)
-    {
-        if (dropdownMenu == null) return;
-        Dropdown currentDropdown = dropdownMenu.GetComponent<Dropdown>();
-        currentDropdown.ClearOptions();
-
-        for (int i = 0; i < playerPerTeam; i++)
-        {
-            var newDeafaultPlayer = new Dropdown.OptionData();
-            newDeafaultPlayer.text = "Player " + i;
-            currentDropdown.options.Add(newDeafaultPlayer);
-        }
+        //send data to game data
     }
 }
