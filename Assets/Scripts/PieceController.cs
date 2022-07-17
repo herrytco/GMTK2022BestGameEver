@@ -9,10 +9,17 @@ public class PieceController : ICharacter
     
     [SerializeField] private ITile spawn;
     [SerializeField] private SpriteRenderer playerSpriteRenderer;
+    [SerializeField] private GameObject selectionArrows;
 
     public Color PieceTint
     {
         set => playerSpriteRenderer.color = value;
+    }
+
+    public bool SelectionArrowsEnabled
+    {
+        get => selectionArrows.gameObject.activeInHierarchy;
+        set => selectionArrows.SetActive(value);
     }
 
     public ITile Spawn

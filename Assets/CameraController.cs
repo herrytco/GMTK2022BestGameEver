@@ -6,6 +6,11 @@ public class CameraController : MonoBehaviour
 {
     public void JumpToPiece(PieceController controller)
     {
-        transform.position = controller.transform.position;
+        Vector3 pos = transform.position;
+        Vector3 posNew = controller.transform.position;
+
+        transform.position = new Vector3(
+            posNew.x, posNew.y, pos.z
+        );
     }
 }

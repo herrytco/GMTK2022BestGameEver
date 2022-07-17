@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public int ActiveTeamMana { get; set; }
     public int TargetTileID { private get; set; } = -1;
     private List<GameObject> movementSelectionUI = new();
-    
+
     private static readonly System.Random Rng = new();
 
     [SerializeField] private GameObject MovementSelectionGO;
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
         List<SimpleTile> possibleSpawnTiles = _mapTiles.ToList();
         possibleSpawnTiles = possibleSpawnTiles.OrderBy(a => Rng.Next()).ToList();
-        
+
         Debug.Log("Map has " + _mapTiles.Length + " tiles");
 
         // disable the end-turn button on startup
@@ -114,15 +114,14 @@ public class GameManager : MonoBehaviour
                 piece.Spawn = spawnTile;
                 piece.SpawnPiece();
 
-                piece.name = "Piece "+(i+1)+" ("+team.Name+")";
+                piece.name = "Piece " + (i + 1) + " (" + team.Name + ")";
                 piece.PieceTint = teamColor;
-                
+
                 teamPieces.Add(piece);
             }
 
             _teamPieces[team] = teamPieces;
         }
-
 
         // start the first turn
         NextTurn();
@@ -248,8 +247,15 @@ public class GameManager : MonoBehaviour
 
     private void EnableCharSelectionUI()
     {
+        Team activeTeam = GetActiveTeam;
+        
+        TextManager.SetMessage("Choose one of your pieces");
         _inCharSelectionMode = true;
-        // cameraController.JumpToPiece();
+
+        PieceController firstPiece = _teamPieces[activeTeam][0];
+        
+        cameraController.JumpToPiece(firstPiece);
+        firstPiece.SelectionArrowsEnabled = true;
     }
 
     public void RegisterVisitCallback(ITile tile, ICharacter piece)
@@ -305,6 +311,5 @@ public class GameManager : MonoBehaviour
         team.ManaCapacity -= amount;
         if (team.ManaCapacity < 0)
             team.ManaCapacity = 0;
-
     }
 }
