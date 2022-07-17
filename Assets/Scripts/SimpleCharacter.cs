@@ -22,4 +22,9 @@ public class SimpleCharacter : ICharacter
     {
         throw new System.NotImplementedException();
     }
+
+    public override void GiveShield()
+    {
+        throw new System.NotImplementedException();
+    }
 }
