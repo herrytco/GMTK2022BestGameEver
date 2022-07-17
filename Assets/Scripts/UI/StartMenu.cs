@@ -5,6 +5,7 @@ using DefaultNamespace;
 using TMPro;
 using UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -162,10 +163,12 @@ public class StartMenu : MonoBehaviour
     public void LaunchBotgame()
     {
         Debug.Log("Launching Botgame");
+        SceneManager.LoadScene(1);
     }
 
     public void LaunchVersus()
     {
         Debug.Log("Launching Versus");
+        SceneManager.LoadScene(2);
     }
 }
