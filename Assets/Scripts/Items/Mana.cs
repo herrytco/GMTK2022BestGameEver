@@ -17,6 +17,7 @@ namespace Items
         private Action _onDone;
 
         private Team _team;
+        private GameManager _gameManager;
 
         public void OnEvent(TileEvent evnt, Action onDone)
         {
@@ -29,6 +30,7 @@ namespace Items
             }
 
             _team = visitEvent.Character.Team;
+            _gameManager = visitEvent.GameManager;
             
             _onDone = onDone;
             _pickUpEffectActive = true;
