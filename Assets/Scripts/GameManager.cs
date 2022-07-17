@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
         if (RollResult > 0 && MoveAnimDone && !WaitForEvents)
         {
             //Disable movement anim
-
+            SelectedCharacter.PieceAnimator.SetBool("moving", false);
             AnimatingMovement = false;
             moveAnimTimer = 0;
             MoveAnimDone = false;
