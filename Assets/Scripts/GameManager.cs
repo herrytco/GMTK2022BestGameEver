@@ -227,4 +227,17 @@ public class GameManager : MonoBehaviour
         ActiveTeamMana = tmpMana;
         return true;
     }
+
+    /// <summary>
+    /// PERMANENTLY REMOVES MANA FROM ONE TEAM
+    /// </summary>
+    /// <param name="team">the team that will be fucked</param>
+    /// <param name="amount">the size of the fuckery</param>
+    public void RemoveManaFromTeam(Team team, int amount)
+    {
+        team.ManaCapacity -= amount;
+        if (team.ManaCapacity < 0)
+            team.ManaCapacity = 0;
+
+    }
 }
