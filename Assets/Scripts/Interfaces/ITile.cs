@@ -57,7 +57,7 @@ namespace Interfaces
         {
             EventManager.Emit(new TileLeaveEvent(this, character), () =>
             {
-                _characters = new();
+                _characters = new List<ICharacter>();
                 onDone(this, character);
             });
         }

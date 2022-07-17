@@ -36,9 +36,16 @@ public class SimpleTile : ITile
     }
 
 
+    private int testVar = 0;
+
     public ICharacter TestChar;
+
     public void TestEvent()
     {
-        Occupy(TestChar, (_, _) => print("callback called"));
+        Occupy(TestChar, (_, _) =>
+        {
+            testVar++;
+            print($"callback called {testVar}");
+        });
     }
 }

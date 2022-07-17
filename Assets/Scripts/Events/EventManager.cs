@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Events
@@ -42,33 +43,40 @@ namespace Events
         private TEvent _toDoEvent;
         private Action _onDone;
 
+        private IEnumerator _handleEventsCoroutine;
+
         public void Emit(TEvent evnt, Action onDone)
         {
+            if (_handleEventsCoroutine != null) StopCoroutine(_handleEventsCoroutine);
+
             _toDoEvent = evnt;
             _onDone = onDone;
-            StartCoroutine(HandleEvents());
+            _handleEventsCoroutine = HandleEventsCoroutine();
+            StartCoroutine(_handleEventsCoroutine);
         }
 
-        protected IEnumerator HandleEvents()
+        private bool _waitingForEventObserver;
+
+        protected IEnumerator HandleEventsCoroutine()
         {
+            Debug.Log($"EventManager (on {gameObject.name}): started for {_toDoEvent}");
             _toDoObservers = Observers;
             while (_toDoObservers.Count != 0)
             {
                 var obs = _toDoObservers[0];
                 _toDoObservers.RemoveAt(0);
 
-                obs.OnEvent(_toDoEvent, ResumeHandleEvents);
-                if (!obs.isDone) yield return null;
+                _waitingForEventObserver = true;
+                obs.OnEvent(_toDoEvent, () => _waitingForEventObserver = false);
+                if (_waitingForEventObserver) Debug.Log($"EventManager (on {gameObject.name}): waiting for {obs} to handle {_toDoEvent}");
+                while (_waitingForEventObserver) yield return null;
+                Debug.Log($"EventManager (on {gameObject.name}): event handled by {obs}");
                 if (obs.deregisterWhenDone) DeregisterObserver(obs);
-                if (!ReferenceEquals(obs.destroyWhenDone, null)) Destroy(obs.destroyWhenDone);
             }
 
+            Debug.Log($"EventManager (on {gameObject.name}): done for {_toDoEvent}, calling onDone");
+            _handleEventsCoroutine = null;
             _onDone();
-        }
-
-        private Action ResumeHandleEvents
-        {
-            get { return () => StartCoroutine(HandleEvents()); }
         }
     }
 }

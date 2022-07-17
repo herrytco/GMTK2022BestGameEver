@@ -9,7 +9,6 @@ namespace Events
 
         public bool isDone { get; }
         public bool deregisterWhenDone { get; }
-        public GameObject destroyWhenDone { get; }
 
         /// <summary>
         ///     Notify of an event.
