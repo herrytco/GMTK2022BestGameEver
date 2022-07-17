@@ -55,8 +55,7 @@ namespace Items
 
             if (Time.time - _pickUpEffectStart >= effectDuration)
             {
-                // TODO give character mana
-                print("mana count not implemented lol");
+                _gameManager.GiveActiveTeamMana();
 
                 // done with animation, signal that the EventManager can continue
                 deregisterWhenDone = true; // and dont call me anymore!
