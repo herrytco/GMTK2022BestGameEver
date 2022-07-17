@@ -18,26 +18,27 @@ namespace Items
         {
             if (evnt is not TileTurnEvent { IsAtEndOfTurn: true } turnEndEvent)
             {
+                isDone = true;
                 onDone();
                 return;
             }
 
             var tile = turnEndEvent.Tile;
-            
             foreach (var character in tile.Characters.ToList())
             {
                 print($"killing {character.Name}");
                 character.TryKill();
             }
-
             tile.Characters = new();
 
+            
             if (--ActiveTurns != 0)
             {
+                isDone = true;
                 onDone();
                 return;
             }
-
+            
             deregisterWhenDone = true;
             onDone();
             enabled = false;

@@ -2,9 +2,14 @@
 {
     public abstract class TileEvent
     {
+        public readonly GameManager GameManager;
         public readonly ITile Tile;
 
-        protected TileEvent(ITile tile) => Tile = tile;
+        protected TileEvent(GameManager gameManager, ITile tile)
+        {
+            Tile = tile;
+            GameManager = gameManager;
+        }
     }
 
     public class TileVisitEvent : TileEvent
@@ -19,7 +24,7 @@
         /// <summary>
         ///     A character visits (arrives at) a tile.
         /// </summary>
-        public TileVisitEvent(ITile tile, ICharacter character, bool passThrough) : base(tile)
+        public TileVisitEvent(GameManager gameManager, ITile tile, ICharacter character, bool passThrough) : base(gameManager, tile)
         {
             Character = character;
             PassThrough = passThrough;
@@ -33,7 +38,7 @@
         /// <summary>
         ///     A character leaves (starts moving from) a tile (not just passed through).
         /// </summary>
-        public TileLeaveEvent(ITile tile, ICharacter character) : base(tile) => Character = character;
+        public TileLeaveEvent(GameManager gameManager, ITile tile, ICharacter character) : base(gameManager, tile) => Character = character;
     }
 
     public class TileTurnEvent : TileEvent
@@ -46,7 +51,7 @@
         /// <summary>
         ///     A game turn ends.
         /// </summary>
-        public TileTurnEvent(ITile tile, bool isAtBeginningOfTurn, int turnCount) : base(tile)
+        public TileTurnEvent(GameManager gameManager, ITile tile, bool isAtBeginningOfTurn, int turnCount) : base(gameManager, tile)
         {
             IsAtBeginningOfTurn = isAtBeginningOfTurn;
             TurnCount = turnCount;

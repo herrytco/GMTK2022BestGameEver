@@ -31,25 +31,25 @@ namespace Interfaces
         /// <summary>
         ///     A character passes through this tile (does not stay/try to occupy)
         /// </summary>
-        public void Visit(ICharacter visitor, [NotNull] Action<ITile, ICharacter> onDone)
+        public void Visit(GameManager gameManager, ICharacter visitor, [NotNull] Action<ITile, ICharacter> onDone)
         {
-            EventManager.Emit(new TileVisitEvent(this, visitor, true), () => onDone(this, visitor));
+            EventManager.Emit(new TileVisitEvent(gameManager, this, visitor, true), () => onDone(this, visitor));
         }
 
         /// <summary>
         ///     A character tries to occupy this tile.
         /// </summary>
-        public void Occupy(ICharacter attacker, [NotNull] Action<ITile, ICharacter> onDone)
+        public void Occupy(GameManager gameManager, ICharacter attacker, [NotNull] Action<ITile, ICharacter> onDone)
         {
-            EventManager.Emit(new TileVisitEvent(this, attacker, false), () => onDone(this, attacker));
+            EventManager.Emit(new TileVisitEvent(gameManager, this, attacker, false), () => onDone(this, attacker));
         }
 
         /// <summary>
         ///     A character (that has occupied this tile previously) leaves this tile.
         /// </summary>
-        public void Leave(ICharacter character, ITile destination, [NotNull] Action<ITile, ICharacter> onDone)
+        public void Leave(GameManager gameManager, ICharacter character, ITile destination, [NotNull] Action<ITile, ICharacter> onDone)
         {
-            EventManager.Emit(new TileLeaveEvent(this, character), () =>
+            EventManager.Emit(new TileLeaveEvent(gameManager, this, character), () =>
             {
                 Characters = new List<ICharacter>();
                 onDone(this, character);
@@ -59,9 +59,9 @@ namespace Interfaces
         /// <summary>
         ///     A game turn has begun/ended.
         /// </summary>
-        public void TurnProgress(int turnNumber, bool isBeginningOfTurn, [NotNull] Action<ITile> onDone)
+        public void TurnProgress(GameManager gameManager, int turnNumber, bool isBeginningOfTurn, [NotNull] Action<ITile> onDone)
         {
-            EventManager.Emit(new TileTurnEvent(this, isBeginningOfTurn, turnNumber), () => onDone(this));
+            EventManager.Emit(new TileTurnEvent(gameManager, this, isBeginningOfTurn, turnNumber), () => onDone(this));
         }
     }
 }
