@@ -4,6 +4,7 @@ using UnityEngine;
 public class PieceController : ICharacter
 {
     private GameManager gameManager;
+    GameObject shieldGO;
     [SerializeField] private ITile spawn;
 
 
@@ -13,6 +14,9 @@ public class PieceController : ICharacter
     {
         CurrentTile = spawn;
         transform.position = CurrentTile.transform.position;
+
+        shieldGO = transform.Find("Shield").gameObject;
+        shieldGO.SetActive(false);
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         //GetComponent<SpriteRenderer>().color = Team.Color;
         ConfirmationCanvas = transform.Find("ConfirmationCanvas").gameObject;
@@ -117,13 +121,25 @@ public class PieceController : ICharacter
         }
     }
 
-    public override void Kill()
+    public override void TryKill()
     {
+        if (Shield)
+        {
+            shieldGO.SetActive(false);
+            Shield = false;
+            return;
+        }
 
         //Particle Effects
 
         
 
-        Destroy(this);
+        Destroy(gameObject);
+    }
+
+    public override void GiveShield()
+    {
+        shieldGO.SetActive(true);
+        Shield = true;
     }
 }

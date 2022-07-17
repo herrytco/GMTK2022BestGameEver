@@ -15,13 +15,24 @@ public class UpDownBumper : MonoBehaviour
         _originalY = transform.position.y;
     }
 
-    void Update()
+    private void Update()
     {
         var pos = transform.position;
 
         transform.position = new Vector3(
             pos.x,
             (float)(_originalY + Math.Sin(Time.time * speedModifier) * amplitude),
+            pos.z
+        );
+    }
+
+    public void Reset()
+    {
+        var pos = transform.position;
+
+        transform.position = new Vector3(
+            pos.x,
+            _originalY,
             pos.z
         );
     }
