@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Items
 {
+    [RequireComponent(typeof(AudioSource))]
     public class Mana : MonoBehaviour, IEventObserver<TileEvent>
     {
         public int Priority => 3;
@@ -19,6 +20,8 @@ namespace Items
         private Team _team;
         private GameManager _gameManager;
 
+        public AudioClip manaPickUpSound;
+
         public void OnEvent(TileEvent evnt, Action onDone)
         {
             if (evnt is not TileVisitEvent { PassThrough: false } visitEvent)
@@ -31,7 +34,8 @@ namespace Items
 
             _team = visitEvent.Character.Team;
             _gameManager = visitEvent.GameManager;
-            
+            AudioSource audioSource = GetComponent<AudioSource>();
+            if (manaPickUpSound != null) audioSource.PlayOneShot(manaPickUpSound);
             _onDone = onDone;
             _pickUpEffectActive = true;
             _pickUpEffectStart = Time.time;
@@ -61,11 +65,12 @@ namespace Items
                 deregisterWhenDone = true; // and dont call me anymore!
                 isDone = true;
                 _onDone();
-                
+
                 // dispose this
                 _pickUpEffectActive = false;
                 enabled = false;
-                Destroy(gameObject);
+                GetComponent<Renderer>().enabled = false;
+                Destroy(gameObject, 5);
             }
         }
     }

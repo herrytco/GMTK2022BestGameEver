@@ -16,8 +16,6 @@ public class StartMenu : MonoBehaviour
     private int startTeamSize = 1;
     private int currentTeamSize;
     public TMP_Dropdown teamDropdown;
-    public TMP_Dropdown teamColorDropdown;
-    public Color[] possibleColors;
     private List<TMP_Dropdown.OptionData> currentTeamOptions = new List<TMP_Dropdown.OptionData>();
 
     private int numTeamsStart = 2;
@@ -28,6 +26,9 @@ public class StartMenu : MonoBehaviour
 
     public GameObject scrollableContainerPrefab;
     public GameObject containerParent;
+    
+    public TMP_Dropdown teamColorDropdown;
+    public Color[] possibleColors;
 
     private void Start()
     {

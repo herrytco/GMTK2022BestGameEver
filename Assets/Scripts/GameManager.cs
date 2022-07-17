@@ -204,4 +204,6 @@ public class GameManager : MonoBehaviour
     {
         GetActiveTeam.ManaCapacity++;
     }
+
+    public void SetActiveTeam(int i) => activeTeamIndex = i;
 }

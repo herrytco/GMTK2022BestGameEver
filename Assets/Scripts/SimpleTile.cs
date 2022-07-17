@@ -45,22 +45,26 @@ public class SimpleTile : ITile
     }
 
     private bool _testWaiting;
-    
+
     public IEnumerator TestRoutine()
     {
+        var gm = gameObject.AddComponent<GameManager>();
+        gm.Teams = new List<Team> { new Team("", 1) };
+        gm.SetActiveTeam(0);
+
         _testWaiting = true;
-        Occupy(null, TestChar, (_, _) => _testWaiting = false);
+        Occupy(gm, TestChar, (_, _) => _testWaiting = false);
         yield return new WaitWhile(() => _testWaiting);
 
         print("occupied, waiting");
         yield return new WaitForSeconds(1f);
-        
+
         for (int i = 0; i < 4; i++)
         {
             _testWaiting = true;
-            TurnProgress(null, 0, false, (_) => _testWaiting = false);
+            TurnProgress(gm, 0, false, (_) => _testWaiting = false);
             yield return new WaitWhile(() => _testWaiting);
-            
+
             print("turn completed, waiting");
             yield return new WaitForSeconds(1f);
         }
